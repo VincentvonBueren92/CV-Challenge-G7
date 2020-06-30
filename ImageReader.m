@@ -17,7 +17,7 @@ classdef ImageReader
             % Input parser
             
             % Standart values
-            src_df = '/Users/hannes/ChokePoint_Dataset';
+            src_df = '/Users/hannes/ChokePoint_Dataset/P1E_S1';
             L_df = 1;
             R_df = 2;
             start_df = 0;
@@ -47,8 +47,42 @@ classdef ImageReader
             ir.N = p.Results.N;
         end
         
-        function [mask] = segmentation(left,right)
-         
+        function loop = next(this)
+            
+            path_splits = regexp(this.src, filesep, 'split');
+            folder = char(path_splits(end));    % Scene folder
+            
+            left_folder = [folder, '_C', num2str(this.L)];    % Camera folder inside scene folder
+            right_folder = [folder, '_C', num2str(this.R)];
+            
+            left_path = fullfile(this.src, left_folder)       % Path of scene folder + specific camera folder
+            right_path = fullfile(this.src, right_folder)
+            
+            left_image_names = dir([left_path '/*.jpg']);          % Image names
+            right_image_names = dir([left_path '/*.jpg']);
+            
+            left = [];
+            right = [];
+            
+            % Read images
+            for k = 2+this.start : 2+this.start+this.N
+                left_name = fullfile(left_path, left_image_names(k).name)  % Full path of an image                
+                left_img = imread(left_name);
+                left_img = reshape(left_img, size(left_img,1), size(left_img,2), 1, 3);   % Change dimensions
+                left = cat(3, left, left_img);                  % Create tensor with mutiple images (600 × 800 × (N + 1) · 3)
+                
+                right_name = fullfile(right_path, right_image_names(k).name);  % Full path of an image
+                right_img = imread(right_name);
+                right_img = reshape(right_img, size(right_img,1), size(left_img,2), 1, 3);
+                right = cat(3, right, imread(right_name));
+            end 
+            
+            figure;
+            image(left(:,:,1,1));
+            size(left)
+           
+            
+            loop = 1;
         end
         
     end
