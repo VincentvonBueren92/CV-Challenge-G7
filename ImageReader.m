@@ -64,8 +64,20 @@ classdef ImageReader
             left = [];
             right = [];
             
+            loop_start = 1 + this.start
+            loop_end = 1 + this.start + this.N
+            length(left_image_names)
+            
+            if loop_start >= length(left_image_names)
+                loop_start = 1;
+            end
+            
+            if loop_end >= length(left_image_names)
+                loop_end = length(left_image_names);
+            end
+           
             % Read images
-            for k = 2+this.start : 2+this.start+this.N
+            for k = loop_start : loop_end
                 left_name = fullfile(left_path, left_image_names(k).name)  % Full path of an image                
                 left_img = imread(left_name);
                 left_img = reshape(left_img, size(left_img,1), size(left_img,2), 1, 3);   % Change dimensions
