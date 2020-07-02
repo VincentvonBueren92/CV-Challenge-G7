@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 30-Jun-2020 12:54:48
+% Last Modified by GUIDE v2.5 02-Jul-2020 18:43:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -41,6 +41,13 @@ if nargout
 else
     gui_mainfcn(gui_State, varargin{:});
 end
+
+
+% Initializes the video source
+global videoSrc 
+videoSrc = vision.VideoFileReader('ecolicells.avi');
+
+
 % End initialization code - DO NOT EDIT
 
 
@@ -73,19 +80,54 @@ function varargout = GUI_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
-% --- Executes on selection change in popupmenu1.
-function popupmenu1_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
+% --- Executes on selection change in choose_bg.
+function choose_bg_Callback(hObject, eventdata, handles)
+% hObject    handle to choose_bg (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu1 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu1
+% Hints: contents = cellstr(get(hObject,'String')) returns choose_bg contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from choose_bg
+src_path = strcat(pwd, '/src');
+FileList = dir(fullfile(src_path, '*.jpg*'));
+NameList = {FileList.name};
+PathList = fullfile({FileList.folder}, NameList);
+set(handles.choose_bg, 'String', NameList);  % Or Name list, as you want
+contents = cellstr(get(hObject,'String'))
+disp(contents{get(hObject,'Value')})
+
+% --- Executes during object creation, after setting all properties.
+function choose_bg_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to choose_bg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in chose_mode.
+function chose_mode_Callback(hObject, eventdata, handles)
+% hObject    handle to chose_mode (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns chose_mode contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from chose_mode
+src_path = strcat(pwd, '/src');
+FileList = dir(fullfile(src_path, '*.mp4*'));
+NameList = {FileList.name};
+PathList = fullfile({FileList.folder}, NameList);
+set(handles.chose_mode, 'String', NameList);  % Or Name list, as you want
+contents = cellstr(get(hObject,'String'))
+disp(contents{get(hObject,'Value')})
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu1 (see GCBO)
+function chose_mode_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to chose_mode (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -96,42 +138,18 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu2.
-function popupmenu2_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu2 (see GCBO)
+function select_start_Callback(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu2 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu2
+% Hints: get(hObject,'String') returns contents of edit2 as text
+%        str2double(get(hObject,'String')) returns contents of edit2 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit1_Callback(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit1 as text
-%        str2double(get(hObject,'String')) returns contents of edit1 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function select_start_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -142,59 +160,187 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu3.
-function popupmenu3_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu3 (see GCBO)
+% --- Executes on button press in stop_btn.
+function stop_btn_Callback(hObject, eventdata, handles)
+% hObject    handle to stop_btn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.stop_btn,'userdata',1)
+
+% --- Executes on button press in save_btn.
+function save_btn_Callback(hObject, eventdata, handles)
+% hObject    handle to save_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu3 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu3
+if get(hObject,'Value') == 1
+    disp('The SAVE button is set');
+else
+    disp('The SAVE button is NOT set');
+end
+
+% --- Executes on button press in save_btn.
+function loop_btn_Callback(hObject, eventdata, handles)
+% hObject    handle to save_btn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.loop_btn,'userdata',1)
+
+
+if get(hObject,'Value') == 1
+    disp('The LOOP button is set');
+else
+    disp('The LOOP button is NOT set');
+end
+
+% --- Executes on button press in start_btn.
+function start_btn_Callback(hObject, eventdata, handles)
+% hObject    handle to start_btn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of start_btn
+% hObject    handle to play_btn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Stores 0 using the name, 'userdata'.
+set(handles.stop_btn, 'userdata', 0);
+
+% Retrieves video source
+global videoSrc;
+
+
+try
+    % Check the status of START button
+    isTextStart = strcmp(hObject.String,'START');
+    if isTextStart
+        % Resets the video if it at the end
+        if isDone(videoSrc)
+            reset(videoSrc);
+        end
+    end
+    
+    while (~isDone(videoSrc))
+        
+        % Set the button name to continue
+        hObject.String = 'CONTINUE';
+      
+        % Get input video frame and rotated frame
+        frame = getAndProcessFrame(videoSrc);
+        % Display input video frame on axis
+        axes(handles.axes1);
+        imshow(frame);
+        
+        pause(0.1);
+        drawnow
+        if get(handles.stop_btn, 'userdata')
+            disp("THE LOOP SHOULD STOP NOW")
+            break 
+        end
+        
+        if (isDone(videoSrc) && get(handles.loop_btn, 'userdata'))
+            disp("The LOOP IS ACTIVATED");
+            reset(videoSrc);
+        end
+       
+    end
+    
+    if isDone(videoSrc)
+        hObject.String = 'START';
+    end
+    
+catch ME
+    % Re-throw error message if it is not related to invalid handle
+    if ~strcmp(ME.identifier, 'MATLAB:class:InvalidHandle')
+        rethrow(ME);
+    end
+end
+
+% ************************ BROWSE TEXT BOX ********************************
+function scene_field_Callback(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit2 as text
+%        str2double(get(hObject,'String')) returns contents of edit2 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu3_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu3 (see GCBO)
+function scene_field_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
-% Hint: popupmenu controls usually have a white background on Windows.
+% Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
 
-% --- Executes on button press in pushbutton7.
-function pushbutton7_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton7 (see GCBO)
+% ************************ BROWSE *****************************************
+% --- Executes on button press in pushbutton1.
+function browse_btn_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+[ video_file_name,video_file_path ] = uigetfile({'*.mp4'},'Pick a video file');      %;*.png;*.yuv;*.bmp;*.tif'},'Pick a file');
+if(video_file_path == 0)
+    return;
+end
+input_video_file = [video_file_path,video_file_name];
+disp(video_file_name)
+set(handles.scene_field,'String',video_file_name);
+% Acquiring video
+videoObject = VideoReader('./src/flight.mp4');
+% Display first frame
+frame_1 = read(videoObject,1);
+axes(handles.axes1);
+imshow(frame_1);
+drawnow;
+axis(handles.axes1,'off');
+% Display Frame Number
+set(handles.frame_num1,'String',['  /  ',num2str(videoObject.NumFrames)]);
+set(handles.start_btn,'Enable','on');
+set(handles.stop_btn,'Enable','off');
+%Update handles
+handles.videoObject = videoObject;
+guidata(hObject,handles);
+
+
+function frame = getAndProcessFrame(videoSrc)
+% Read input video frame
+frame = step(videoSrc);
+
+
+% --- Executes on button press in exit_btn.
+function exit_btn_Callback(hObject, eventdata, handles)
+% hObject    handle to exit_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in pushbutton8.
-function pushbutton8_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton8 (see GCBO)
+
+function choose_start_Callback(hObject, eventdata, handles)
+% hObject    handle to choose_start (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% Hints: get(hObject,'String') returns contents of choose_start as text
+%        str2double(get(hObject,'String')) returns contents of choose_start as a double
 
-% --- Executes on button press in pushbutton9.
-function pushbutton9_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton9 (see GCBO)
+
+% --- Executes during object creation, after setting all properties.
+function choose_start_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to choose_start (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% handles    empty - handles not created until after all CreateFcns called
 
-
-% --- Executes on button press in pushbutton10.
-function pushbutton10_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton10 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in pushbutton11.
-function pushbutton11_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton11 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
