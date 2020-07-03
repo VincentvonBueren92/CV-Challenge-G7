@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 02-Jul-2020 18:43:44
+% Last Modified by GUIDE v2.5 03-Jul-2020 23:40:03
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -87,10 +87,10 @@ global be_N;
 
 % Initialize the global variables
 gui_loop_set = 0;
-gui_start = 500;
+gui_start = 0;
 be_L = 1;
 be_R = 2;
-be_N = 0;
+be_N = 2;
 
 
 
@@ -142,20 +142,20 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in chose_mode.
-function chose_mode_Callback(hObject, eventdata, handles)
-% hObject    handle to chose_mode (see GCBO)
+% --- Executes on selection change in choose_mode.
+function choose_mode_Callback(hObject, eventdata, handles)
+% hObject    handle to choose_mode (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns chose_mode contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from chose_mode
+% Hints: contents = cellstr(get(hObject,'String')) returns choose_mode contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from choose_mode
 disp(contents{get(hObject,'Value')})
 
 
 % --- Executes during object creation, after setting all properties.
-function chose_mode_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to chose_mode (see GCBO)
+function choose_mode_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to choose_mode (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -237,7 +237,7 @@ function start_btn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Stores 0 using the name, 'userdata'.
+% Initialize all the global variables
 global gui_loop_set;
 global gui_start;
 global be_L;
@@ -245,37 +245,55 @@ global be_R;
 global be_src;
 global be_N;
 
+
+% Set the counter to chosen gui_start value (default is zero)
 counter = gui_start;
-% ENDE wenn die loop variable auf 1 gesetzt wurde
+
 while(1)
-    disp("SRAETARA");
+    
     imageReadObject = ImageReader(be_src, be_L, be_R, counter, be_N)
     [left, right, loop] = imageReadObject.next();
-    disp(loop);
     
-    frame = squeeze(left(:,:,1,:));
+    % Segmentation of the images and creation of mask
+    mask = segmentation(left, right);
     
+    % Returns selected item from choose background
+    %bg = contents{get(handles.choose_bg,'Value')};
+    bg = 'src/office.jpg'; % Just for Debugging
+    
+    % Returns selected item from choose background
+    %mode = contents{get(handles.choose_mode,'Value')};
+    mode = 'substitute'; % Just for Debugging
+    
+    % Gets the frame of the left camera and of the right camera
+    frame_left = squeeze(left(:,:,1,:));
+    frame_right = squeeze(right(:,:,1,:));
+    
+    % Renders the frame of the left camera given the mode and bg
+    rendered_frame = render(frame_left, mask, bg, mode);
+    
+    % Delete figure stack to increase performance
     cla reset;
-    imagesc(frame,'Parent', handles.axes1);
-    drawnow();
     
-        
-    disp("ENDING");
+    % Show images for left and right camera
+    imagesc(rendered_frame, 'Parent', handles.axes1);
+    imagesc(frame_right, 'Parent', handles.axes2);
+    drawnow;
+    
     % Increment the frame counter
     counter = counter + 1;
-
-% Checks for the flag (loop:= end of video) 
+    
+    % Checks for the flag (loop:= end of video)
     if loop == 1
-        % If GUIis manually set to LOOP, reset counter to choose_start
+        % If GUI is manually set to LOOP, reset counter to choose_start
         if gui_loop_set == 1
             counter = gui_start;
         else
-            %The video finished
+            %The video has finished and we exit the loop
             break
         end
     end
 end
-
 
 % ************************ BROWSE TEXT BOX ********************************
 function scene_field_Callback(hObject, eventdata, handles)
@@ -325,39 +343,16 @@ set(handles.loop_btn,'Enable','on');
 counter = gui_start;
 imageReadObject = ImageReader(be_src, be_L, be_R, counter, be_N);
 [left, right, loop] = imageReadObject.next();
-first_frame = squeeze(left(:,:,1,:));
+first_frame_left = squeeze(left(:,:,1,:));
+first_frame_right = squeeze(right(:,:,1,:));
 
-axes(handles.axes1);
-imagesc(first_frame,'Parent', handles.axes1);
+imagesc(first_frame_left,'Parent', handles.axes1);
+imagesc(first_frame_right,'Parent', handles.axes2);
 drawnow;
 axis(handles.axes1,'off');
+axis(handles.axes2,'off');
 
 disp(be_src); % FOR DEBUGGING
-
-
-
-
-% 
-% 
-% input_video_file = [video_file_path,video_file_name];
-% disp(video_file_name)
-% set(handles.scene_field,'String',video_file_name);
-% % Acquiring video
-% videoObject = VideoReader('./src/flight.mp4');
-% % Display first frame
-% frame_1 = read(videoObject,1);
-% axes(handles.axes1);
-% imshow(frame_1);
-% drawnow;
-% axis(handles.axes1,'off');
-% % Display Frame Number
-% set(handles.frame_num1,'String',['  /  ',num2str(videoObject.NumFrames)]);
-% set(handles.start_btn,'Enable','on');
-% set(handles.loop_btn,'Enable','on');
-% set(handles.stop_btn,'Enable','off');
-% %Update handles
-% handles.videoObject = videoObject;
-% guidata(hObject,handles);
 
 
 function frame = getAndProcessFrame(videoSrc)
@@ -408,13 +403,13 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-
-
-
 % TODO
 % - CREATE A MSG BOX WITH, INSTRUCTIONS...CHOOSE START NUMBER
 % - YOU CAN ONLY CHOOSE VALID SOURCE FOLDERS
 % - REALLY IMPORTANT IN CURRENT IMAGEREADER CLASS THE LOOP VALUE HAS TO BE
 % SET BACK TO ZERO
 % - 
+
+
+
+    

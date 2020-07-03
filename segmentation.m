@@ -2,17 +2,21 @@ function [mask] = segmentation(left,right)
   % Add function description here
   %
   %
-
- 
+  
+  % Gets the dimensions of the left tensor
+  size_left = size(left);
+  
+  % Packs the tensors in cell arrays
+  for i=1:size_left(3)
+      left_tensor{i} = squeeze(left(:,:,i,:));
+      right_tensor{i} = squeeze(right(:,:,i,:));
+  end
   
 %% get gray Images
-    s=size(left);
-
-    for i = 1:s(2)
-        gray_image{i} = rgb2gray(left{i});
-    end
-    
-    
+for i = 1:size_left(3)
+    gray_image{i} = rgb2gray(left_tensor{i});
+end
+      
 %% get Image difference of the last 3 frames (r,g,b seperatly)
 
     %% Tried to change color intensity for better results. But no success. 
@@ -25,22 +29,22 @@ function [mask] = segmentation(left,right)
     
     
     
-    im_diff_r{1} = left{1}(:,:,1)-left{2}(:,:,1);
+    im_diff_r{1} = left_tensor{1}(:,:,1)-left_tensor{2}(:,:,1);
     im_bin_r{1} = imbinarize(im_diff_r{1});
 
-    im_diff_g{1} = left{1}(:,:,2)-left{2}(:,:,2);
+    im_diff_g{1} = left_tensor{1}(:,:,2)-left_tensor{2}(:,:,2);
     im_bin_g{1} = imbinarize(im_diff_g{1});
 
-    im_diff_b{1} = left{1}(:,:,3)-left{2}(:,:,3);
+    im_diff_b{1} = left_tensor{1}(:,:,3)-left_tensor{2}(:,:,3);
     im_bin_b{1} = imbinarize(im_diff_b{1});
    
-    im_diff_r{2} = left{2}(:,:,1)-left{3}(:,:,1);
+    im_diff_r{2} = left_tensor{2}(:,:,1)-left_tensor{3}(:,:,1);
     im_bin_r{2} = imbinarize(im_diff_r{2});
 
-    im_diff_g{2} = left{2}(:,:,2)-left{3}(:,:,2);
+    im_diff_g{2} = left_tensor{2}(:,:,2)-left_tensor{3}(:,:,2);
     im_bin_g{2} = imbinarize(im_diff_g{2});
 
-    im_diff_b{2} = left{2}(:,:,3)-left{3}(:,:,3);
+    im_diff_b{2} = left_tensor{2}(:,:,3)-left_tensor{3}(:,:,3);
     im_bin_b{2} = imbinarize(im_diff_b{2});
 
     % compose all detected difference
@@ -51,17 +55,16 @@ function [mask] = segmentation(left,right)
     
     
     %% Use average of n images for a second recognition 
-    s = size(left);
-    Iaverage =zeros(size(left{1}));
-    for i = 1:s(2)
-        Iaverage = double(Iaverage) + double(left{i})/s(2);
+    Iaverage =zeros(size(left_tensor{1}));
+    for i = 1:size_left(3)
+        Iaverage = double(Iaverage) + double(left_tensor{i})/size_left(3);
     end
     
-    im_diff = abs(uint8(Iaverage)-uint8(left{2}));
+    im_diff = abs(uint8(Iaverage)-uint8(left_tensor{2}));
     im_diff = rgb2gray(im_diff);
     
     im_diff_bin = imbinarize(im_diff);
-    imshow(im_diff_bin)
+    %imshow(im_diff_bin)
     
     
     %% Combine the average and the "binar" method
@@ -115,7 +118,7 @@ function [mask] = segmentation(left,right)
     % use gaussian filter for blurring the points
     mask = imgaussfilt(double(mask),1)*100; 
     mask = imgaussfilt(double(mask),1);
-    mask = imbinarize(mask)
+    mask = imbinarize(mask);
    
     
 %% fill MASK  
@@ -143,24 +146,23 @@ function [mask] = segmentation(left,right)
     mask = bwareafilt(mask, 5, 'Largest');
     
     
-% plot steps in between
-    figure(1);
-    subplot(3,3,1);
-    imshow(im_bin);
-    subplot(3,3,2);
- %   imshow(BW_difference);
-    subplot(3,3,3);
-   % imshow(mask1);
-    subplot(3,3,4);
-    imshow(AND);
-    subplot(3,3,5);
-   % imshow(mask2);
-    subplot(3,3,6);
-    imshow(mask);
-    subplot(3,3,7);
-    imshow(edges)
-    subplot(3,3,8)
-    imshow(left{3}(:,:,3))
-    
+% % plot steps in between
+%     figure(1);
+%     subplot(3,3,1);
+%     imshow(im_bin);
+%     subplot(3,3,2);
+%  %   imshow(BW_difference);
+%     subplot(3,3,3);
+%    % imshow(mask1);
+%     subplot(3,3,4);
+%     imshow(AND);
+%     subplot(3,3,5);
+%    % imshow(mask2);
+%     subplot(3,3,6);
+%     imshow(mask);
+%     subplot(3,3,7);
+%     imshow(edges)
+%     subplot(3,3,8)
+%     imshow(left_tensor{3}(:,:,3))
  
 end

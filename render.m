@@ -45,7 +45,8 @@ function [result] = render(frame,mask,bg,mode)
       case 'substitute'
           
         % scale background to frame size
-        scaled_bg = imresize(bg,[size(frame,1) size(frame,2)]);
+        I = imread(bg); 
+        scaled_bg = imresize(I,[size(frame,1) size(frame,2)]);
         
         % get background mask
         mask_complement = imcomplement(mask);
