@@ -72,9 +72,25 @@ set(handles.loop_btn,'Enable','off');
 set(handles.save_btn,'Enable','off');
 
 
-% Loop variable is set
-global loop_set;
-loop_set = 0;
+% Import ImageReader class
+import ImageReader.*;
+
+
+% Global variables which define flow of GUI (be:= backend, gui:=
+% graphical user interfac)
+global gui_loop_set;
+global be_src;
+global be_L;
+global be_R;
+global gui_start;
+global be_N;
+
+% Initialize the global variables
+gui_loop_set = 0;
+gui_start = 500;
+be_L = 1;
+be_R = 2;
+be_N = 0;
 
 
 
@@ -98,13 +114,21 @@ function choose_bg_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns choose_bg contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from choose_bg
+
+% Define source path
 src_path = strcat(pwd, '/src');
+
+% Extract only jpg background files
 FileList = dir(fullfile(src_path, '*.jpg*'));
 NameList = {FileList.name};
+
 PathList = fullfile({FileList.folder}, NameList);
-set(handles.choose_bg, 'String', NameList);  % Or Name list, as you want
-contents = cellstr(get(hObject,'String'))
-disp(contents{get(hObject,'Value')})
+set(handles.choose_bg, 'String', NameList); 
+
+% Extracts the name
+contents = cellstr(get(hObject,'String'));
+
+disp(contents{get(hObject,'Value')});
 
 % --- Executes during object creation, after setting all properties.
 function choose_bg_CreateFcn(hObject, eventdata, handles)
@@ -126,12 +150,6 @@ function chose_mode_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns chose_mode contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from chose_mode
-src_path = strcat(pwd, '/src');
-FileList = dir(fullfile(src_path, '*.mp4*'));
-NameList = {FileList.name};
-PathList = fullfile({FileList.folder}, NameList);
-set(handles.chose_mode, 'String', NameList);  % Or Name list, as you want
-contents = cellstr(get(hObject,'String'))
 disp(contents{get(hObject,'Value')})
 
 
@@ -177,6 +195,7 @@ function stop_btn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 if(strcmp(get(handles.stop_btn,'String'),'STOP'))
+    
     set(handles.stop_btn,'String','PLAY');
     uiwait();
 else
@@ -184,35 +203,27 @@ else
     uiresume();
 end
     
-
-
-
 % --- Executes on button press in save_btn.
 function save_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to save_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-if get(hObject,'Value') == 1
-    disp('The SAVE button is set');
-else
-    disp('The SAVE button is NOT set');
-end
 
 % --- Executes on button press in save_btn.
 function loop_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to save_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global loop_set;
+global gui_loop_set;
 
 if(strcmp(get(handles.loop_btn,'String'),'LOOP'))
     disp("Compared works")
     set(handles.loop_btn,'String','NO LOOP');
-    loop_set = 1;
+    gui_loop_set = 1;
 else
     set(handles.loop_btn,'String','LOOP');
-    loop_set = 0;
+    gui_loop_set = 0;
 end
 
 
@@ -228,29 +239,63 @@ function start_btn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Stores 0 using the name, 'userdata'.
-set(handles.stop_btn, 'userdata', 0);
+global gui_loop_set;
+global gui_start;
+global be_L;
+global be_R;
+global be_src;
+global be_N;
 
-global loop_set;
+counter = gui_start;
 
-% Retrieves video source
-videoObject = handles.videoObject;
-set(handles.stop_btn,'Enable','on');
-set(handles.start_btn,'Enable','off');
-axes(handles.axes1);
-
-frameCount = 2;
-while frameCount <= videoObject.NumberOfFrames
+% ENDE wenn die loop variable auf 1 gesetzt wurde
+while (1)
     
-    set(handles.frame_num1,'String',num2str(frameCount));
-    frame = read(videoObject,frameCount);
-    imshow(frame);
+    imageReadObject = ImageReader(be_src, be_L, be_R, counter, be_N)
+    [left, right, loop] = imageReadObject.next();
+    
+    frame = squeeze(left(:,:,1,:));
+    cla reset;
+    imagesc(frame,'Parent', handles.axes1);
     drawnow();
-    frameCount = frameCount + 1;
     
-    if (frameCount == videoObject.NumberOfFrames && loop_set)
-        frameCount = 2;
+    % Increment the frame counter
+    counter = counter + 1;
+    
+    % Checks for the flag (loop:= end of video) 
+    if loop == 1
+        % If GUIis manually set to LOOP, reset counter to choose_start
+        if gui_loop_set == 1
+            counter = gui_choose_start;
+        else
+            % Shows first frame and ends playing of the video
+            imagesc(0,'Parent', handles.axes1);
+            break
+        end
     end
-end 
+    delete(imageReadObject);
+end
+
+% 
+% % Retrieves video source
+% videoObject = handles.videoObject;
+% set(handles.stop_btn,'Enable','on');
+% set(handles.start_btn,'Enable','off');
+% axes(handles.axes1);
+% 
+% frameCount = 2;
+% while frameCount <= videoObject.NumberOfFrames
+%     
+%     set(handles.frame_num1,'String',num2str(frameCount));
+%     frame = read(videoObject,frameCount);
+%     imshow(frame);
+%     drawnow();
+%     frameCount = frameCount + 1;
+%     
+%     if (frameCount == videoObject.NumberOfFrames && loop_set)
+%         frameCount = 1;
+%     end
+% end 
 
 % ************************ BROWSE TEXT BOX ********************************
 function scene_field_Callback(hObject, eventdata, handles)
@@ -282,29 +327,42 @@ function browse_btn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-[ video_file_name,video_file_path ] = uigetfile({'*.mp4'},'Pick a video file');      %;*.png;*.yuv;*.bmp;*.tif'},'Pick a file');
-if(video_file_path == 0)
-    return;
-end
-input_video_file = [video_file_path,video_file_name];
-disp(video_file_name)
-set(handles.scene_field,'String',video_file_name);
-% Acquiring video
-videoObject = VideoReader('./src/flight.mp4');
-% Display first frame
-frame_1 = read(videoObject,1);
-axes(handles.axes1);
-imshow(frame_1);
-drawnow;
-axis(handles.axes1,'off');
-% Display Frame Number
-set(handles.frame_num1,'String',['  /  ',num2str(videoObject.NumFrames)]);
+% Choose scene from src directories
+global be_src;
+be_src = uigetdir();    
+
+set(handles.choose_start,'Enable','on');
 set(handles.start_btn,'Enable','on');
+set(handles.save_btn,'Enable','on');
+set(handles.stop_btn,'Enable','on');
 set(handles.loop_btn,'Enable','on');
-set(handles.stop_btn,'Enable','off');
-%Update handles
-handles.videoObject = videoObject;
-guidata(hObject,handles);
+
+disp(be_src);
+
+
+
+
+% 
+% 
+% input_video_file = [video_file_path,video_file_name];
+% disp(video_file_name)
+% set(handles.scene_field,'String',video_file_name);
+% % Acquiring video
+% videoObject = VideoReader('./src/flight.mp4');
+% % Display first frame
+% frame_1 = read(videoObject,1);
+% axes(handles.axes1);
+% imshow(frame_1);
+% drawnow;
+% axis(handles.axes1,'off');
+% % Display Frame Number
+% set(handles.frame_num1,'String',['  /  ',num2str(videoObject.NumFrames)]);
+% set(handles.start_btn,'Enable','on');
+% set(handles.loop_btn,'Enable','on');
+% set(handles.stop_btn,'Enable','off');
+% %Update handles
+% handles.videoObject = videoObject;
+% guidata(hObject,handles);
 
 
 function frame = getAndProcessFrame(videoSrc)
@@ -335,6 +393,12 @@ function choose_start_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of choose_start as text
 %        str2double(get(hObject,'String')) returns contents of choose_start as a double
 
+% Update the global variabel start
+global gui_start;
+gui_start = str2num(get(hObject,'String'));
+
+
+
 
 % --- Executes during object creation, after setting all properties.
 function choose_start_CreateFcn(hObject, eventdata, handles)
@@ -347,3 +411,13 @@ function choose_start_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+
+
+
+
+% TODO
+% - CREATE A MSG BOX WITH, INSTRUCTIONS...CHOOSE START NUMBER
+% - YOU CAN ONLY CHOOSE VALID SOURCE FOLDERS
+% - 

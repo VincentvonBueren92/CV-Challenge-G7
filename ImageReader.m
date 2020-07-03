@@ -1,4 +1,4 @@
-classdef ImageReader
+classdef ImageReader < handle
   % Add class description here
   %
   %
@@ -17,18 +17,16 @@ classdef ImageReader
             % Input parser
             
             % Standart values
-            src_df = '/Users/hannes/ChokePoint_Dataset/P1E_S1';
             L_df = 1;
             R_df = 2;
             start_df = 0;
             N_df = 1;
 
             % Requirements
-            src_val = @(x) exist(src, 'dir') == 7;  % Check if file path exists
             L_val = @(x) isnumeric(x) && (x >= 1) && (x <= 2);
             R_val = @(x) isnumeric(x) && (x >= 2) && (x <= 3);
             start_val = @(x) isnumeric(x) && (x >= 0);
-            N_val = @(x) isnumeric(x) && (x >= 1);
+            N_val = @(x) isnumeric(x) && (x >= 0);
 
             % Matlab parser function
             p = inputParser;
