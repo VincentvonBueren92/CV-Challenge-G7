@@ -1,18 +1,23 @@
-classdef ImageReader
+classdef ImageReader < handle
   % Add class description here
   % Documentation on defining classes in Matlab: https://de.mathworks.com/help/matlab/matlab_oop/create-a-simple-class.html
   % Example on defining the constructer: https://de.mathworks.com/help/matlab/matlab_oop/class-constructor-methods.html#:~:text=A%20constructor%20method%20is%20a,an%20instance%20of%20the%20class.&text=All%20MATLAB%C2%AE%20classes%20have,that%20overrides%20the%20default%20constructor.
-  % 
+  % The class is a handla as I am changing the value of test_it in the
+  % class method
   
   % Add properties
   properties
       % mustBeMember user guide:
       % https://de.mathworks.com/help/matlab/ref/mustbemember.html (option as parser)
-      src = ''; % Path of the sequence
+      src = '/Users/amna.najib/Documents/amna/CV/data/P1E_S1'; % Path of the sequence
       L = 1; % number of the left camera 
       R  = 2; % number of the right camera
       start = 0; % start point of the frames lecture
       N = 1; % How many frames to load using next method
+      test_it = 0; % The variable tests if the class is initiated again 
+                   % test_it is O on the initial instantiation of the class
+                   % , otherwise 1
+      
   end
   
   methods 
@@ -20,9 +25,6 @@ classdef ImageReader
       function obj = ImageReader(src, L, R, varargin)
           
           % Set default values
-          defaultSource = '/Users/amna.najib/Documents/amna/CV/data/P1E_S1';
-          defaultLeft = 1;
-          defaultRight = 2;
           defaultStart = 0;
           defaultN = 1;
           
@@ -54,18 +56,19 @@ classdef ImageReader
         % Set the method next
         function loop = next(this)
             
-            % Define the variable loop
-            
             % Set loop variable l 
-            persistent l; 
+            l = 0; 
             % Set iterator variable it
             persistent it; 
             
-            % Init l
-            if isempty(l)
-                l = 0;
+            % Reinitiate it if the class is intiated again
+            if this.test_it == 0
+                it = this.start + 1;
             end
             
+            % Set the test_it to 1
+            this.test_it = 1;
+
             % Init it
             if isempty(it)
                 it = this.start + 1;
@@ -73,7 +76,7 @@ classdef ImageReader
             
             % Get folder name
             list_path = split(this.src, filesep) ;
-            folder = char(list_path(end))
+            folder = char(list_path(end));
             
             % Set the cam1 & cam2 folders
             cam1_folder = [folder, '_C', num2str(this.L)]; 
@@ -91,18 +94,24 @@ classdef ImageReader
             % Set the number of images in the folder
             num_imgs = length(left_imgs);
             
+            % Throw an error if the start value exceeds the number of
+            % frames in the chosen sequence
+            if this.start > num_imgs
+                error('Error. Start value exceeds the number of frames in sequence. Please choose another start value!')
+            end
+            
             % Init left & right
             left = [];
             right = [];
             
             % Set the beginning "it_start" and end of the loop "it_end"
-            it_start = it
+            it_start = it;
             it_end = it_start + this.N;
             
             % Change the end of the loop iterator if achieving the end of
             % the folder files
-            if it_end > num_imgs
-                it_end = num_imgs
+            if it_end >= num_imgs
+                it_end = num_imgs;
                 l = 1;
             end
             
@@ -126,20 +135,19 @@ classdef ImageReader
                 
                 % Set loop variable + consider the case of reaching the end
                 if l ~=1 & i==it_end
-                    it = it_end +1
-                    loop = l
+                    it = it_end +1;
+                    loop = l;
                 elseif l == 1 & i==it_end
-                    it = 1
-                    loop = l
-                    l = 0
-                    % l = 2
-                    % loop = l-2
+                    % Restart from the beginning
+                    it = 1;
+                    loop = l;
+                    l = 0;
                 end
             end
 
             % A truecolor (RGB) image sequence, specified as an M-by-N-by-3-by-K array.
             % Change the tensor to fit implay requirement
-            left_vis = reshape(left, size(right_img,1), size(left_img,2), 3, []);
+            left_vis = reshape(left, size(left_img,1), size(left_img,2), 3, []);
             % Play the sequence
             implay(left_vis);
         end
