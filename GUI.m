@@ -195,7 +195,6 @@ function stop_btn_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 if(strcmp(get(handles.stop_btn,'String'),'STOP'))
-    
     set(handles.stop_btn,'String','PLAY');
     uiwait();
 else
@@ -247,55 +246,36 @@ global be_src;
 global be_N;
 
 counter = gui_start;
-
 % ENDE wenn die loop variable auf 1 gesetzt wurde
-while (1)
-    
+while(1)
+    disp("SRAETARA");
     imageReadObject = ImageReader(be_src, be_L, be_R, counter, be_N)
     [left, right, loop] = imageReadObject.next();
+    disp(loop);
     
     frame = squeeze(left(:,:,1,:));
+    
     cla reset;
     imagesc(frame,'Parent', handles.axes1);
     drawnow();
     
+        
+    disp("ENDING");
     % Increment the frame counter
     counter = counter + 1;
-    
-    % Checks for the flag (loop:= end of video) 
+
+% Checks for the flag (loop:= end of video) 
     if loop == 1
         % If GUIis manually set to LOOP, reset counter to choose_start
         if gui_loop_set == 1
-            counter = gui_choose_start;
+            counter = gui_start;
         else
-            % Shows first frame and ends playing of the video
-            imagesc(0,'Parent', handles.axes1);
+            %The video finished
             break
         end
     end
-    delete(imageReadObject);
 end
 
-% 
-% % Retrieves video source
-% videoObject = handles.videoObject;
-% set(handles.stop_btn,'Enable','on');
-% set(handles.start_btn,'Enable','off');
-% axes(handles.axes1);
-% 
-% frameCount = 2;
-% while frameCount <= videoObject.NumberOfFrames
-%     
-%     set(handles.frame_num1,'String',num2str(frameCount));
-%     frame = read(videoObject,frameCount);
-%     imshow(frame);
-%     drawnow();
-%     frameCount = frameCount + 1;
-%     
-%     if (frameCount == videoObject.NumberOfFrames && loop_set)
-%         frameCount = 1;
-%     end
-% end 
 
 % ************************ BROWSE TEXT BOX ********************************
 function scene_field_Callback(hObject, eventdata, handles)
@@ -329,6 +309,11 @@ function browse_btn_Callback(hObject, eventdata, handles)
 
 % Choose scene from src directories
 global be_src;
+global be_L;
+global be_R;
+global be_N;
+global gui_start
+
 be_src = uigetdir();    
 
 set(handles.choose_start,'Enable','on');
@@ -337,7 +322,17 @@ set(handles.save_btn,'Enable','on');
 set(handles.stop_btn,'Enable','on');
 set(handles.loop_btn,'Enable','on');
 
-disp(be_src);
+counter = gui_start;
+imageReadObject = ImageReader(be_src, be_L, be_R, counter, be_N);
+[left, right, loop] = imageReadObject.next();
+first_frame = squeeze(left(:,:,1,:));
+
+axes(handles.axes1);
+imagesc(first_frame,'Parent', handles.axes1);
+drawnow;
+axis(handles.axes1,'off');
+
+disp(be_src); % FOR DEBUGGING
 
 
 
@@ -420,4 +415,6 @@ end
 % TODO
 % - CREATE A MSG BOX WITH, INSTRUCTIONS...CHOOSE START NUMBER
 % - YOU CAN ONLY CHOOSE VALID SOURCE FOLDERS
+% - REALLY IMPORTANT IN CURRENT IMAGEREADER CLASS THE LOOP VALUE HAS TO BE
+% SET BACK TO ZERO
 % - 
