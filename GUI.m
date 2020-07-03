@@ -43,9 +43,7 @@ else
 end
 
 
-% Initializes the video source
-global videoSrc 
-videoSrc = vision.VideoFileReader('ecolicells.avi');
+
 
 
 % End initialization code - DO NOT EDIT
@@ -67,6 +65,18 @@ guidata(hObject, handles);
 
 % UIWAIT makes GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
+
+set(handles.stop_btn,'Enable','off');
+set(handles.start_btn,'Enable','off');
+set(handles.loop_btn,'Enable','off');
+set(handles.save_btn,'Enable','off');
+
+
+% Loop variable is set
+global loop_set;
+loop_set = 0;
+
+
 
 
 % --- Outputs from this function are returned to the command line.
@@ -165,7 +175,17 @@ function stop_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to stop_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.stop_btn,'userdata',1)
+
+if(strcmp(get(handles.stop_btn,'String'),'STOP'))
+    set(handles.stop_btn,'String','PLAY');
+    uiwait();
+else
+    set(handles.stop_btn,'String','STOP');
+    uiresume();
+end
+    
+
+
 
 % --- Executes on button press in save_btn.
 function save_btn_Callback(hObject, eventdata, handles)
@@ -184,14 +204,17 @@ function loop_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to save_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.loop_btn,'userdata',1)
+global loop_set;
 
-
-if get(hObject,'Value') == 1
-    disp('The LOOP button is set');
+if(strcmp(get(handles.loop_btn,'String'),'LOOP'))
+    disp("Compared works")
+    set(handles.loop_btn,'String','NO LOOP');
+    loop_set = 1;
 else
-    disp('The LOOP button is NOT set');
+    set(handles.loop_btn,'String','LOOP');
+    loop_set = 0;
 end
+
 
 % --- Executes on button press in start_btn.
 function start_btn_Callback(hObject, eventdata, handles)
@@ -207,55 +230,27 @@ function start_btn_Callback(hObject, eventdata, handles)
 % Stores 0 using the name, 'userdata'.
 set(handles.stop_btn, 'userdata', 0);
 
+global loop_set;
+
 % Retrieves video source
-global videoSrc;
+videoObject = handles.videoObject;
+set(handles.stop_btn,'Enable','on');
+set(handles.start_btn,'Enable','off');
+axes(handles.axes1);
 
-
-try
-    % Check the status of START button
-    isTextStart = strcmp(hObject.String,'START');
-    if isTextStart
-        % Resets the video if it at the end
-        if isDone(videoSrc)
-            reset(videoSrc);
-        end
-    end
+frameCount = 2;
+while frameCount <= videoObject.NumberOfFrames
     
-    while (~isDone(videoSrc))
-        
-        % Set the button name to continue
-        hObject.String = 'CONTINUE';
-      
-        % Get input video frame and rotated frame
-        frame = getAndProcessFrame(videoSrc);
-        % Display input video frame on axis
-        axes(handles.axes1);
-        imshow(frame);
-        
-        pause(0.1);
-        drawnow
-        if get(handles.stop_btn, 'userdata')
-            disp("THE LOOP SHOULD STOP NOW")
-            break 
-        end
-        
-        if (isDone(videoSrc) && get(handles.loop_btn, 'userdata'))
-            disp("The LOOP IS ACTIVATED");
-            reset(videoSrc);
-        end
-       
-    end
+    set(handles.frame_num1,'String',num2str(frameCount));
+    frame = read(videoObject,frameCount);
+    imshow(frame);
+    drawnow();
+    frameCount = frameCount + 1;
     
-    if isDone(videoSrc)
-        hObject.String = 'START';
+    if (frameCount == videoObject.NumberOfFrames && loop_set)
+        frameCount = 2;
     end
-    
-catch ME
-    % Re-throw error message if it is not related to invalid handle
-    if ~strcmp(ME.identifier, 'MATLAB:class:InvalidHandle')
-        rethrow(ME);
-    end
-end
+end 
 
 % ************************ BROWSE TEXT BOX ********************************
 function scene_field_Callback(hObject, eventdata, handles)
@@ -305,6 +300,7 @@ axis(handles.axes1,'off');
 % Display Frame Number
 set(handles.frame_num1,'String',['  /  ',num2str(videoObject.NumFrames)]);
 set(handles.start_btn,'Enable','on');
+set(handles.loop_btn,'Enable','on');
 set(handles.stop_btn,'Enable','off');
 %Update handles
 handles.videoObject = videoObject;
@@ -321,8 +317,15 @@ function exit_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to exit_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-
+%close all;
+input=menu('Are you sure that you want to quit the simulation?',...
+    'YES','NO');
+  switch input
+      case 1
+          closereq;
+      case 2
+          return
+  end
 
 function choose_start_Callback(hObject, eventdata, handles)
 % hObject    handle to choose_start (see GCBO)
