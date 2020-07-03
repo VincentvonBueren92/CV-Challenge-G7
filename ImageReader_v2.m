@@ -143,5 +143,5 @@ classdef ImageReader
             % Play the sequence
             implay(left_vis);
         end
-  end
+    end
 end
