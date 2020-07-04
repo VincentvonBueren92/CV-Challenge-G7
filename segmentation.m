@@ -4,7 +4,7 @@ function [mask] = segmentation(left,right)
   %
 
  size_left = size(left)
-  for i=size_left(3)
+  for i=1:size_left(3)
 
       left_tensor{i} = squeeze(left(:,:,i,:));
       right_tensor{i} = squeeze(right(:,:,i,:));
@@ -13,8 +13,8 @@ function [mask] = segmentation(left,right)
 %% get gray Images
     s=size(left);
 
-    for i = 1:s(2)
-        gray_image{i} = rgb2gray(left{i});
+    for i = 1:size_left(3)
+        gray_image{i} = rgb2gray(left_tensor{i});
     end
     
     
@@ -30,22 +30,22 @@ function [mask] = segmentation(left,right)
     
     
     
-    im_diff_r{1} = left{1}(:,:,1)-left{2}(:,:,1);
+    im_diff_r{1} = left_tensor{1}(:,:,1)-left_tensor{2}(:,:,1);
     im_bin_r{1} = imbinarize(im_diff_r{1});
 
-    im_diff_g{1} = left{1}(:,:,2)-left{2}(:,:,2);
+    im_diff_g{1} = left_tensor{1}(:,:,2)-left_tensor{2}(:,:,2);
     im_bin_g{1} = imbinarize(im_diff_g{1});
 
-    im_diff_b{1} = left{1}(:,:,3)-left{2}(:,:,3);
+    im_diff_b{1} = left_tensor{1}(:,:,3)-left_tensor{2}(:,:,3);
     im_bin_b{1} = imbinarize(im_diff_b{1});
    
-    im_diff_r{2} = left{2}(:,:,1)-left{3}(:,:,1);
+    im_diff_r{2} = left_tensor{2}(:,:,1)-left_tensor{3}(:,:,1);
     im_bin_r{2} = imbinarize(im_diff_r{2});
 
-    im_diff_g{2} = left{2}(:,:,2)-left{3}(:,:,2);
+    im_diff_g{2} = left_tensor{2}(:,:,2)-left_tensor{3}(:,:,2);
     im_bin_g{2} = imbinarize(im_diff_g{2});
 
-    im_diff_b{2} = left{2}(:,:,3)-left{3}(:,:,3);
+    im_diff_b{2} = left_tensor{2}(:,:,3)-left_tensor{3}(:,:,3);
     im_bin_b{2} = imbinarize(im_diff_b{2});
 
     % compose all detected difference
@@ -59,13 +59,12 @@ function [mask] = segmentation(left,right)
     
     
     %% Use average of n images for a second recognition 
-    s = size(left);
-    Iaverage =zeros(size(left{1}));
-    for i = 1:s(2)
-        Iaverage = double(Iaverage) + double(left{i})/s(2);
+    Iaverage =zeros(size(left_tensor{1}));
+    for i = 1:size_left(3)
+        Iaverage = double(Iaverage) + double(left_tensor{i})/size_left(3);
     end
     
-    im_diff = abs(uint8(Iaverage)-uint8(left{2}));
+    im_diff = abs(uint8(Iaverage)-uint8(left_tensor{2}));
     im_diff = rgb2gray(im_diff);
     
     im_diff_bin = imbinarize(im_diff,0.01);
@@ -177,27 +176,27 @@ function [mask] = segmentation(left,right)
     % takes only the largest 
     mask = bwareafilt(mask, 7, 'Largest');
     
-% plot steps in between
-    figure(1);
-    subplot(3,3,1);
-    imshow(im_diff_bin);
-    
-    subplot(3,3,2);
-    imshow(im_bin_combined);
-    subplot(3,3,3);
-    imshow(im_diff_bin_filled);
-    subplot(3,3,4);
-    imshow(im_bin_neg);
-    subplot(3,3,5);
-    imshow(im_bin_neg);
-    subplot(3,3,6);
-    imshow(mask);
-    subplot(3,3,7);
-    %imshow(im_diff_bin)
-    subplot(3,3,8)
-    %imshow(left{3}(:,:,3))
-    subplot(3,3,9)
-%    imshow(im_edges_bin);
+% % plot steps in between
+%     figure(1);
+%     subplot(3,3,1);
+%     imshow(im_diff_bin);
+%     
+%     subplot(3,3,2);
+%     imshow(im_bin_combined);
+%     subplot(3,3,3);
+%     imshow(im_diff_bin_filled);
+%     subplot(3,3,4);
+%     imshow(im_bin_neg);
+%     subplot(3,3,5);
+%     imshow(im_bin_neg);
+%     subplot(3,3,6);
+%     imshow(mask);
+%     subplot(3,3,7);
+%     %imshow(im_diff_bin)
+%     subplot(3,3,8)
+%     %imshow(left{3}(:,:,3))
+%     subplot(3,3,9)
+% %    imshow(im_edges_bin);
     
  
 end

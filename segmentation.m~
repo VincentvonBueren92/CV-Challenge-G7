@@ -2,8 +2,8 @@ function [mask] = segmentation(left,right)
   % Add function description here
   %
   %
-  
-  size_left = size(left);
+
+ size_left = size(left)
   for i=size_left(3)
 
       left_tensor{i} = squeeze(left(:,:,i,:));
@@ -11,10 +11,13 @@ function [mask] = segmentation(left,right)
   end
   
 %% get gray Images
-for i = 1:size_left(3)
-    gray_image{i} = rgb2gray(left{i});
-end
-      
+    s=size(left);
+
+    for i = 1:size_left(3)
+        gray_image{i} = rgb2gray(left_tensor{i});
+    end
+    
+    
 %% get Image difference of the last 3 frames (r,g,b seperatly)
 
     %% Tried to change color intensity for better results. But no success. 
@@ -27,52 +30,75 @@ end
     
     
     
-    im_diff_r{1} = left{1}(:,:,1)-left{2}(:,:,1);
+    im_diff_r{1} = left_tensor{1}(:,:,1)-left_tensor{2}(:,:,1);
     im_bin_r{1} = imbinarize(im_diff_r{1});
 
-    im_diff_g{1} = left{1}(:,:,2)-left{2}(:,:,2);
+    im_diff_g{1} = left_tensor{1}(:,:,2)-left_tensor{2}(:,:,2);
     im_bin_g{1} = imbinarize(im_diff_g{1});
 
-    im_diff_b{1} = left{1}(:,:,3)-left{2}(:,:,3);
+    im_diff_b{1} = left_tensor{1}(:,:,3)-left_tensor{2}(:,:,3);
     im_bin_b{1} = imbinarize(im_diff_b{1});
    
-    im_diff_r{2} = left{2}(:,:,1)-left{3}(:,:,1);
+    im_diff_r{2} = left_tensor{2}(:,:,1)-left_tensor{3}(:,:,1);
     im_bin_r{2} = imbinarize(im_diff_r{2});
 
-    im_diff_g{2} = left{2}(:,:,2)-left{3}(:,:,2);
+    im_diff_g{2} = left_tensor{2}(:,:,2)-left_tensor{3}(:,:,2);
     im_bin_g{2} = imbinarize(im_diff_g{2});
 
-    im_diff_b{2} = left{2}(:,:,3)-left{3}(:,:,3);
+    im_diff_b{2} = left_tensor{2}(:,:,3)-left_tensor{3}(:,:,3);
     im_bin_b{2} = imbinarize(im_diff_b{2});
 
     % compose all detected difference
-    im_bin_1 = im_bin_r{1} | im_bin_g{1} |im_bin_b{1};
-    im_bin_2 = im_bin_r{2} | im_bin_g{2} |im_bin_b{2};
+    im_bin_1 = im_bin_r{1} & im_bin_g{1} &im_bin_b{1};
+    im_bin_2 = im_bin_r{2} & im_bin_g{2} &im_bin_b{2};
     
-    im_bin = im_bin_1 | im_bin_2;
+    im_bin_or = im_bin_1 & im_bin_2;
+    se = strel('disk',10);
+    im_bin_or = imclose(im_bin_or, se);
+    im_bin_or = bwareaopen(im_bin_or, 3);
     
     
     %% Use average of n images for a second recognition 
-    s = size(left);
-    Iaverage =zeros(size(left{1}));
-    for i = 1:s(2)
-        Iaverage = double(Iaverage) + double(left{i})/s(2);
+    Iaverage =zeros(size(left_tensor{1}));
+    for i = 1:size_left(3)
+        Iaverage = double(Iaverage) + double(left_tensor{i})/size_left(3);
     end
     
-    im_diff = abs(uint8(Iaverage)-uint8(left{2}));
+    im_diff = abs(uint8(Iaverage)-uint8(left_tensor{2}));
     im_diff = rgb2gray(im_diff);
     
-    im_diff_bin = imbinarize(im_diff);
-    imshow(im_diff_bin)
+    im_diff_bin = imbinarize(im_diff,0.01);
+    im_diff_bin = bwareaopen(im_diff_bin, 50);
     
     
-    %% Combine the average and the "binar" method
-    im_bin=im_diff_bin | im_bin;
-    im_bin = imgaussfilt(double(im_bin),5); % use gaussian filter for blurring the points
-    im_bin = imbinarize(im_bin, 0.01); % make a binary picture again
+    %% Combine the average and the "binar" method wird nicht mehr kombiniert
+    im_bin_combined=im_diff_bin| im_bin_or;
+    %% Use Gauß in im_bin
+    im_diff_bin_filled = imgaussfilt(double(im_bin_combined),40)*10;
     
+    % try to fill holes
+    im_diff_bin_filled = imfill(im_diff_bin_filled,"holes");
+    im_diff_bin_filled = imbinarize(im_diff_bin_filled, 0.1);
+    
+    %im_bin = imgaussfilt(double(im_bin_combined),10); % use gaussian filter for blurring the points
+    %im_bin = imbinarize(im_bin, 0.01); % make a binary picture again
+    
+    % creat a negative binary picture out of the binary picture
+    im_bin_neg = ones(size(im_diff_bin_filled));
+    im_bin_neg = im_bin_neg - im_diff_bin_filled;
+    
+    % Use Gauß on negative binary picture to smaller cutout
+    im_bin_neg = imgaussfilt(double(im_bin_neg),25)*10;
+    im_bin_neg = imbinarize(im_bin_neg,0.01);
+    im_bin_neg= ones(size(im_bin_neg))-im_bin_neg;
+    im_bin_neg = imbinarize(im_bin_neg,0.1);
+    im_bin = im_bin_neg;
+    
+ 
 %% Detect noise and set that points to 0
-    im_bin = bwmorph(im_bin, 'majority', 5);
+    %im_bin = bwmorph(im_bin, 'majority', 5);
+    
+
 %% fill difference map
     %TODO: this process is currently a quite random sequence of functions
     %to fill out the difference map -> find more deterministic way
@@ -100,7 +126,10 @@ end
   
     
 %% get intensity gradiant
-    edges = edge(gray_image{2}, 'Canny');
+    %edges = edge(gray_image{2}, 'Canny');
+    %im_edges_bin = edges&im_bin_combined;
+    %im_edges_bin = imgaussfilt(double(im_edges_bin),10);
+    %im_edges_bin = imbinarize(im_edges_bin,0.01);
     %TODO: idea(Hannes & Vincent) %smooth gradient by applying gussian
     %filter
     
@@ -108,17 +137,19 @@ end
     
 %% AND - Connection between  difference map and gradient edges
     %AND = BW_difference & edges;
-    AND = im_bin & edges;
+    %AND = im_bin & edges;
     
     
-    AND = bwareaopen(AND, 5); % removes small objects
-    mask = AND;
+    %AND = bwareaopen(AND, 5); % removes small objects
+    %mask = AND;
     
     % use gaussian filter for blurring the points
-    mask = imgaussfilt(double(mask),1)*100; 
-    mask = imgaussfilt(double(mask),1);
-    mask = imbinarize(mask)
-   
+    %mask = imgaussfilt(double(mask),1)*100; 
+    %mask = imgaussfilt(double(mask),1);
+    %mask = imbinarize(mask);
+    %mask_boundary = bwboundaries(mask);
+    %mask_2 = regionprops(mask, 'Centroid', 'BoundingBox');
+    %mask = im_bin;
     
 %% fill MASK  
     %TODO: this process is currently a quite random sequence of functions
@@ -140,29 +171,32 @@ end
     
     % mask = imbinarize(mask, 0.1);
     % fills hols
+    mask = im_bin;
     mask = imfill(mask,'holes');
     % takes only the largest 
-    mask = bwareafilt(mask, 5, 'Largest');
+    mask = bwareafilt(mask, 7, 'Largest');
     
-    
-% plot steps in between
-    figure(1);
-    subplot(3,3,1);
-    imshow(im_bin);
-    subplot(3,3,2);
- %   imshow(BW_difference);
-    subplot(3,3,3);
-   % imshow(mask1);
-    subplot(3,3,4);
-    imshow(AND);
-    subplot(3,3,5);
-   % imshow(mask2);
-    subplot(3,3,6);
-    imshow(mask);
-    subplot(3,3,7);
-    imshow(edges)
-    subplot(3,3,8)
-    imshow(left{3}(:,:,3))
+% % plot steps in between
+%     figure(1);
+%     subplot(3,3,1);
+%     imshow(im_diff_bin);
+%     
+%     subplot(3,3,2);
+%     imshow(im_bin_combined);
+%     subplot(3,3,3);
+%     imshow(im_diff_bin_filled);
+%     subplot(3,3,4);
+%     imshow(im_bin_neg);
+%     subplot(3,3,5);
+%     imshow(im_bin_neg);
+%     subplot(3,3,6);
+%     imshow(mask);
+%     subplot(3,3,7);
+%     %imshow(im_diff_bin)
+%     subplot(3,3,8)
+%     %imshow(left{3}(:,:,3))
+%     subplot(3,3,9)
+% %    imshow(im_edges_bin);
     
  
 end
