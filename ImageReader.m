@@ -91,6 +91,7 @@ classdef ImageReader < handle
             if l == 1
                 loop_start = 1;
                 loop_end = loop_start + this.N;
+                l = 0;
             end
             
             % Set loop variable if there are not enough images
