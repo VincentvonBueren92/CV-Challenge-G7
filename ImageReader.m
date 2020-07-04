@@ -64,8 +64,17 @@ classdef ImageReader < handle
             left_path = fullfile(this.src, left_folder);       % Path of scene folder + specific camera folder
             right_path = fullfile(this.src, right_folder);
             
+             
             left_image_names = dir([left_path '/*.jpg']);          % Image names
             right_image_names = dir([left_path '/*.jpg']);
+            
+            
+            % For Windows users, improve the path 
+            if isEmpty(left_image_names)
+                left_image_names = dir([left_path '\*.jpg']);          % Image names
+                right_image_names = dir([left_path '\*.jpg']);
+            end
+                
             
             % Tensors with the images
             left = [];
