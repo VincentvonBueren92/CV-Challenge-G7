@@ -3,7 +3,12 @@ function [mask] = segmentation(left,right)
   %
   %
 
- 
+ size_left = size(left)
+  for i=size_left(3)
+
+      left_tensor{i} = squeeze(left(:,:,i,:));
+      right_tensor{i} = squeeze(right(:,:,i,:));
+  end
   
 %% get gray Images
     s=size(left);
