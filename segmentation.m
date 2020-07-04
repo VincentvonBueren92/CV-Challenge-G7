@@ -4,6 +4,7 @@ function [mask] = segmentation(left,right)
   %
 
  size_left = size(left)
+ 
   for i=1:size_left(3)
 
       left_tensor{i} = squeeze(left(:,:,i,:));
@@ -11,7 +12,7 @@ function [mask] = segmentation(left,right)
   end
   
 %% get gray Images
-    s=size(left);
+
 
     for i = 1:size_left(3)
         gray_image{i} = rgb2gray(left_tensor{i});
@@ -55,7 +56,7 @@ function [mask] = segmentation(left,right)
     im_bin_or = im_bin_1 & im_bin_2;
     se = strel('disk',10);
     im_bin_or = imclose(im_bin_or, se);
-    im_bin_or = bwareaopen(im_bin_or, 3);
+    im_bin_or = bwareaopen(im_bin_or, 400);
     
     
     %% Use average of n images for a second recognition 
