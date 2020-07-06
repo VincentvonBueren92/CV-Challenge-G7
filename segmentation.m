@@ -3,7 +3,7 @@ function [mask] = segmentation(left,right)
   %
   %
 
- size_left = size(left)
+ size_left = size(left);
  
   for i=1:size_left(3)
 
@@ -56,7 +56,7 @@ function [mask] = segmentation(left,right)
     im_bin_or = im_bin_1 & im_bin_2;
     se = strel('disk',10);
     im_bin_or = imclose(im_bin_or, se);
-    im_bin_or = bwareaopen(im_bin_or, 400);
+    im_bin_or = bwareaopen(im_bin_or, 2000);
     
     
     %% Use average of n images for a second recognition 
@@ -64,16 +64,18 @@ function [mask] = segmentation(left,right)
     for i = 1:size_left(3)
         Iaverage = double(Iaverage) + double(left_tensor{i})/size_left(3);
     end
-    
-    im_diff = abs(uint8(Iaverage)-uint8(left_tensor{2}));
+    middle = int8(size_left(3)/2);
+    im_diff = abs(uint8(Iaverage)-uint8(left_tensor{middle}));
     im_diff = rgb2gray(im_diff);
     
     im_diff_bin = imbinarize(im_diff,0.01);
+    se = strel('disk',10);
+    im_bin_or = imclose(im_bin_or, se);
     im_diff_bin = bwareaopen(im_diff_bin, 50);
     
     
     %% Combine the average and the "binar" method wird nicht mehr kombiniert
-    im_bin_combined=im_diff_bin| im_bin_or;
+    im_bin_combined=im_diff_bin; %| im_bin_or;
     %% Use Gauß in im_bin
     im_diff_bin_filled = imgaussfilt(double(im_bin_combined),40)*10;
     
