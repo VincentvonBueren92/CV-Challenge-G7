@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 03-Jul-2020 23:40:03
+% Last Modified by GUIDE v2.5 06-Jul-2020 23:55:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,6 +84,7 @@ global be_L;
 global be_R;
 global gui_start;
 global be_N;
+global EXIT;
 
 % Initialize the global variables
 gui_loop_set = 0;
@@ -91,6 +92,7 @@ gui_start = 0;
 be_L = 1;
 be_R = 2;
 be_N = 2;
+EXIT = 0;
 
 
 
@@ -244,12 +246,12 @@ global be_L;
 global be_R;
 global be_src;
 global be_N;
-
+global EXIT;
 
 % Set the counter to chosen gui_start value (default is zero)
 counter = gui_start;
 
-while(1)
+while(1 && ~EXIT)
     
     imageReadObject = ImageReader(be_src, be_L, be_R, counter, be_N)
     [left, right, loop] = imageReadObject.next();
@@ -278,6 +280,10 @@ while(1)
     % Show images for left and right camera
     imagesc(rendered_frame, 'Parent', handles.axes1);
     imagesc(frame_right, 'Parent', handles.axes2);
+    
+    % Remove axes
+    axis(handles.axes1,'off');
+    axis(handles.axes2,'off');
     drawnow;
     
     % Increment the frame counter
@@ -292,8 +298,11 @@ while(1)
             %The video has finished and we exit the loop
             break
         end
-    end
+    end 
 end
+
+% Clears all axes
+close all;
 
 % ************************ BROWSE TEXT BOX ********************************
 function scene_field_Callback(hObject, eventdata, handles)
@@ -366,11 +375,15 @@ function exit_btn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 %close all;
+global EXIT;
+
 input=menu('Are you sure that you want to quit the simulation?',...
     'YES','NO');
   switch input
       case 1
+          EXIT = 1;
           closereq;
+          close all
       case 2
           return
   end
@@ -408,8 +421,18 @@ end
 % - YOU CAN ONLY CHOOSE VALID SOURCE FOLDERS
 % - REALLY IMPORTANT IN CURRENT IMAGEREADER CLASS THE LOOP VALUE HAS TO BE
 % SET BACK TO ZERO
-% - 
+%     
 
 
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
-    
+% Hint: delete(hObject) closes the figure
+global EXIT;
+EXIT = 1;
+delete(hObject);
+
+function uipanel2_DeleteFcn(hObject, eventdata, handles)
