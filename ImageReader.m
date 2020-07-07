@@ -60,7 +60,7 @@ classdef ImageReader < handle
             ir.N = p.Results.N;
         end
         
-        function [loop] = next(this)
+        function [left, right, loop] = next(this)
             
             % Persistent second loop variable. Will be updated to the actual 'loop' variable in the end
             persistent l;
@@ -127,7 +127,7 @@ classdef ImageReader < handle
             % Read images
             for k = loop_start : loop_end
                 % Create full path of the current left/right image 
-                img_name_l = fullfile(scene_cam_l_path, img_list_l(k).name)             
+                img_name_l = fullfile(scene_cam_l_path, img_list_l(k).name);             
                 img_name_r = fullfile(scene_cam_r_path, img_list_r(k).name);
                 
                 % Read left/right image from path

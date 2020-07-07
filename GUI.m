@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 06-Jul-2020 23:55:32
+% Last Modified by GUIDE v2.5 07-Jul-2020 22:49:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -41,10 +41,6 @@ if nargout
 else
     gui_mainfcn(gui_State, varargin{:});
 end
-
-
-
-
 
 % End initialization code - DO NOT EDIT
 
@@ -66,36 +62,13 @@ guidata(hObject, handles);
 % UIWAIT makes GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
-set(handles.stop_btn,'Enable','off');
-set(handles.start_btn,'Enable','off');
-set(handles.loop_btn,'Enable','off');
-set(handles.save_btn,'Enable','off');
-
-
 % Import ImageReader class
 import ImageReader.*;
 
 
-% Global variables which define flow of GUI (be:= backend, gui:=
-% graphical user interfac)
-global gui_loop_set;
-global be_src;
-global be_L;
-global be_R;
-global gui_start;
-global be_N;
-global EXIT;
-
-% Initialize the global variables
-gui_loop_set = 0;
-gui_start = 0;
-be_L = 1;
-be_R = 2;
-be_N = 2;
-EXIT = 0;
-
-
-
+% Initiates State Struct
+global states;
+states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', './src/office.jpg', 'selected_mode', 'substitute');
 
 % --- Outputs from this function are returned to the command line.
 function varargout = GUI_OutputFcn(hObject, eventdata, handles) 
@@ -107,7 +80,7 @@ function varargout = GUI_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
-
+% ************************ Choose Background ******************************
 % --- Executes on selection change in choose_bg.
 function choose_bg_Callback(hObject, eventdata, handles)
 % hObject    handle to choose_bg (see GCBO)
@@ -127,10 +100,14 @@ NameList = {FileList.name};
 PathList = fullfile({FileList.folder}, NameList);
 set(handles.choose_bg, 'String', NameList); 
 
-% Extracts the name
+% Extracts the selected
 contents = cellstr(get(hObject,'String'));
 
-disp(contents{get(hObject,'Value')});
+disp(contents)
+
+
+
+
 
 % --- Executes during object creation, after setting all properties.
 function choose_bg_CreateFcn(hObject, eventdata, handles)
@@ -143,7 +120,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
+% ************************ Choose Mode ************************************
 % --- Executes on selection change in choose_mode.
 function choose_mode_Callback(hObject, eventdata, handles)
 % hObject    handle to choose_mode (see GCBO)
@@ -152,7 +129,7 @@ function choose_mode_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns choose_mode contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from choose_mode
-disp(contents{get(hObject,'Value')})
+
 
 
 % --- Executes during object creation, after setting all properties.
@@ -168,6 +145,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
+% ************************ Choose Start Number ****************************
 function select_start_Callback(hObject, eventdata, handles)
 % hObject    handle to edit2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -190,20 +168,15 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in stop_btn.
-function stop_btn_Callback(hObject, eventdata, handles)
-% hObject    handle to stop_btn (see GCBO)
+% ************************ Stop and Play **********************************
+function play_btn_Callback(hObject, eventdata, handles)
+% hObject    handle to play_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-if(strcmp(get(handles.stop_btn,'String'),'STOP'))
-    set(handles.stop_btn,'String','PLAY');
-    uiwait();
-else
-    set(handles.stop_btn,'String','STOP');
-    uiresume();
-end
-    
+% Resumes the play of the videos
+uiresume();
+
 % --- Executes on button press in save_btn.
 function save_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to save_btn (see GCBO)
@@ -216,18 +189,18 @@ function loop_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to save_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global gui_loop_set;
+global states;
 
 if(strcmp(get(handles.loop_btn,'String'),'LOOP'))
     disp("Compared works")
     set(handles.loop_btn,'String','NO LOOP');
-    gui_loop_set = 1;
+    states.gui_loop_set = 1;
 else
     set(handles.loop_btn,'String','LOOP');
-    gui_loop_set = 0;
+    states.gui_loop_set = 0;
 end
 
-
+% ************************ START *****************************************
 % --- Executes on button press in start_btn.
 function start_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to start_btn (see GCBO)
@@ -238,34 +211,24 @@ function start_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to play_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Initialize all the global variables
-global gui_loop_set;
-global gui_start;
-global be_L;
-global be_R;
-global be_src;
-global be_N;
-global EXIT;
+global states
 
 % Set the counter to chosen gui_start value (default is zero)
-counter = gui_start;
+counter = states.gui_start;
 
-while(1 && ~EXIT)
+while(1 && ~states.EXIT)
     
-    imageReadObject = ImageReader(be_src, be_L, be_R, counter, be_N)
+    imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N)
     [left, right, loop] = imageReadObject.next();
     
     % Segmentation of the images and creation of mask
     mask = segmentation(left, right);
     
     % Returns selected item from choose background
-    %bg = contents{get(handles.choose_bg,'Value')};
-    bg = 'src/office.jpg'; % Just for Debugging
+    bg = states.selected_bg;
     
-    % Returns selected item from choose background
-    %mode = contents{get(handles.choose_mode,'Value')};
-    mode = 'substitute'; % Just for Debugging
+    % Returns selected mode
+    mode = states.selected_mode;
     
     % Gets the frame of the left camera and of the right camera
     frame_left = squeeze(left(:,:,1,:));
@@ -291,9 +254,10 @@ while(1 && ~EXIT)
     
     % Checks for the flag (loop:= end of video)
     if loop == 1
-        % If GUI is manually set to LOOP, reset counter to choose_start
-        if gui_loop_set == 1
-            counter = gui_start;
+        % If GUI is manually set to LOOP, reset counter to selected start
+        % value
+        if states.gui_loop_set == 1
+            counter = states.gui_start;
         else
             %The video has finished and we exit the loop
             break
@@ -304,29 +268,6 @@ end
 % Clears all axes
 close all;
 
-% ************************ BROWSE TEXT BOX ********************************
-function scene_field_Callback(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit2 as text
-%        str2double(get(hObject,'String')) returns contents of edit2 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function scene_field_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
 % ************************ BROWSE *****************************************
 % --- Executes on button press in pushbutton1.
 function browse_btn_Callback(hObject, eventdata, handles)
@@ -334,54 +275,50 @@ function browse_btn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Choose scene from src directories
-global be_src;
-global be_L;
-global be_R;
-global be_N;
-global gui_start
+% Initializes state vector
+global states;
 
-be_src = uigetdir();    
+% Saves the files origi in be_src
+states.be_src = uigetdir();    
 
-set(handles.choose_start,'Enable','on');
-set(handles.start_btn,'Enable','on');
-set(handles.save_btn,'Enable','on');
-set(handles.stop_btn,'Enable','on');
-set(handles.loop_btn,'Enable','on');
+% Assigns counter to selected start value
+counter = states.gui_start;
 
-counter = gui_start;
-imageReadObject = ImageReader(be_src, be_L, be_R, counter, be_N);
+% Instatiates ImageReader object
+imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N);
+
+% get the first three images of camera left and right
 [left, right, loop] = imageReadObject.next();
+
+% Prepare frames
 first_frame_left = squeeze(left(:,:,1,:));
 first_frame_right = squeeze(right(:,:,1,:));
 
+% Load first images in figures
 imagesc(first_frame_left,'Parent', handles.axes1);
 imagesc(first_frame_right,'Parent', handles.axes2);
 drawnow;
+
+% Remove axes in figures
 axis(handles.axes1,'off');
 axis(handles.axes2,'off');
 
-disp(be_src); % FOR DEBUGGING
 
-
-function frame = getAndProcessFrame(videoSrc)
-% Read input video frame
-frame = step(videoSrc);
-
-
-% --- Executes on button press in exit_btn.
+% ************************ Exit** *****************************************
 function exit_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to exit_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 %close all;
-global EXIT;
+global states;
 
+% Menu for Exit confirmation
 input=menu('Are you sure that you want to quit the simulation?',...
     'YES','NO');
   switch input
+      % Exit is approved, clear all figures and exit GUI
       case 1
-          EXIT = 1;
+          states.EXIT = 1;
           closereq;
           close all
       case 2
@@ -396,12 +333,9 @@ function choose_start_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of choose_start as text
 %        str2double(get(hObject,'String')) returns contents of choose_start as a double
 
-% Update the global variabel start
-global gui_start;
-gui_start = str2num(get(hObject,'String'));
-
-
-
+% Update the start value
+global states;
+states.gui_start = str2num(get(hObject,'String'));
 
 % --- Executes during object creation, after setting all properties.
 function choose_start_CreateFcn(hObject, eventdata, handles)
@@ -415,6 +349,54 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Closes all the figures when figures get closed
+global states;
+states.EXIT = 1;
+delete(hObject);
+
+function uipanel2_DeleteFcn(hObject, eventdata, handles)
+
+
+% --- Executes on button press in browse_bg.
+function browse_bg_Callback(hObject, eventdata, handles)
+% hObject    handle to browse_bg (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Initializes state vector
+global states;
+
+% Gets the path and the file of the background selected
+[bg_name, path_name] = uigetfile('*.jpg', 'Select an image file:');
+if ~ischar(bg_name)
+  disp('User pressed Cancel');
+  return;  % Or what ever is applicable
+end
+
+% Complete path to file
+bg_image_path = fullfile(path_name, bg_name);
+
+% Updates selected_bg
+states.selected_bg = bg_image_path;
+
+
+% --- Executes on button press in pause_btn.
+function pause_btn_Callback(hObject, eventdata, handles)
+% hObject    handle to pause_btn (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Stops the execution of the videos
+uiwait();
+
+
+
 
 % TODO
 % - CREATE A MSG BOX WITH, INSTRUCTIONS...CHOOSE START NUMBER
@@ -422,17 +404,3 @@ end
 % - REALLY IMPORTANT IN CURRENT IMAGEREADER CLASS THE LOOP VALUE HAS TO BE
 % SET BACK TO ZERO
 %     
-
-
-% --- Executes when user attempts to close figure1.
-function figure1_CloseRequestFcn(hObject, eventdata, handles)
-% hObject    handle to figure1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: delete(hObject) closes the figure
-global EXIT;
-EXIT = 1;
-delete(hObject);
-
-function uipanel2_DeleteFcn(hObject, eventdata, handles)
