@@ -60,7 +60,7 @@ classdef ImageReader < handle
             ir.N = p.Results.N;
         end
         
-        function [left, right, loop] = next(this)
+        function [left, right, loop, img_num] = next(this)
             
             % Persistent second loop variable. Will be updated to the actual 'loop' variable in the end
             persistent l;

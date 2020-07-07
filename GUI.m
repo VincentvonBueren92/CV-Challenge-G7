@@ -22,7 +22,7 @@ function varargout = GUI(varargin)
 
 % Edit the above text to modify the response to help GUI
 
-% Last Modified by GUIDE v2.5 07-Jul-2020 22:49:47
+% Last Modified by GUIDE v2.5 07-Jul-2020 23:26:43
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -80,46 +80,6 @@ function varargout = GUI_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
-% ************************ Choose Background ******************************
-% --- Executes on selection change in choose_bg.
-function choose_bg_Callback(hObject, eventdata, handles)
-% hObject    handle to choose_bg (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns choose_bg contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from choose_bg
-
-% Define source path
-src_path = strcat(pwd, '/src');
-
-% Extract only jpg background files
-FileList = dir(fullfile(src_path, '*.jpg*'));
-NameList = {FileList.name};
-
-PathList = fullfile({FileList.folder}, NameList);
-set(handles.choose_bg, 'String', NameList); 
-
-% Extracts the selected
-contents = cellstr(get(hObject,'String'));
-
-disp(contents)
-
-
-
-
-
-% --- Executes during object creation, after setting all properties.
-function choose_bg_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to choose_bg (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 % ************************ Choose Mode ************************************
 % --- Executes on selection change in choose_mode.
 function choose_mode_Callback(hObject, eventdata, handles)
@@ -129,6 +89,18 @@ function choose_mode_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns choose_mode contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from choose_mode
+global states;
+contents = cellstr(get(hObject,'String'));
+selected_mode = contents{get(hObject,'Value')};
+
+var = '-----------';
+if strcmp(var,selected_mode)
+    return
+else
+    states.selected_mode = selected_mode;
+end
+    
+
 
 
 
@@ -218,8 +190,8 @@ counter = states.gui_start;
 
 while(1 && ~states.EXIT)
     
-    imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N)
-    [left, right, loop] = imageReadObject.next();
+    imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N);
+    [left, right, loop, img_num] = imageReadObject.next();
     
     % Segmentation of the images and creation of mask
     mask = segmentation(left, right);
@@ -247,8 +219,25 @@ while(1 && ~states.EXIT)
     % Remove axes
     axis(handles.axes1,'off');
     axis(handles.axes2,'off');
-    drawnow;
+
+    % Update the shown frame counter
+    frame_text1 = strcat(' / ', num2str(img_num));
+    frame_text2 = strcat(num2str(counter), frame_text1);
+    set(handles.frame_num, 'String', frame_text2);
     
+    % Present the chosen mode and background
+    set(handles.mode_presented, 'String', mode);
+    
+    % Checks for operating systems and extracts the filename of image
+    if ispc
+        splitted_path_arr = strsplit(bg,'\');
+        set(handles.bg_presented, 'String', splitted_path_arr(-1));
+    else
+        splitted_path_arr = strsplit(bg,'/');
+        set(handles.bg_presented, 'String', splitted_path_arr(end));
+    end
+        
+    drawnow;
     % Increment the frame counter
     counter = counter + 1;
     
@@ -288,7 +277,7 @@ counter = states.gui_start;
 imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N);
 
 % get the first three images of camera left and right
-[left, right, loop] = imageReadObject.next();
+[left, right, loop, img_num] = imageReadObject.next();
 
 % Prepare frames
 first_frame_left = squeeze(left(:,:,1,:));
@@ -363,7 +352,7 @@ delete(hObject);
 function uipanel2_DeleteFcn(hObject, eventdata, handles)
 
 
-% --- Executes on button press in browse_bg.
+% ************************ Choose Background ******************************
 function browse_bg_Callback(hObject, eventdata, handles)
 % hObject    handle to browse_bg (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -382,7 +371,7 @@ end
 % Complete path to file
 bg_image_path = fullfile(path_name, bg_name);
 
-% Updates selected_bg
+% Updates bg_presented
 states.selected_bg = bg_image_path;
 
 
