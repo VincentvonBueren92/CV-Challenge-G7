@@ -147,9 +147,11 @@
  
              % A truecolor (RGB) image sequence, specified as an M-by-N-by-3-by-K array.
              % Change the tensor to fit implay requirement
-             left_vis = reshape(left, size(left_img,1), size(left_img,2), 3, []);
+             % Only for showing the result
+             % left_vis = reshape(left, size(left_img,1), size(left_img,2), 3, []);
              % Play the sequence
-             implay(left_vis);
+             % Only for showing the result
+             % implay(left_vis);
          end
      end
  end

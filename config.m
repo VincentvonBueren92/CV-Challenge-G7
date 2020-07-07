@@ -13,19 +13,19 @@
 
 %% Setup Image Reader
 % Specify Scene Folder
-src = "Path/to/my/ChokePoint/P1E_S1";
+src = "/Users/amna.najib/Documents/amna/CV/data/P1E_S1";
 
 % Select Cameras
-% L =
-% R =
+L = 1
+R = 2
 
 % Choose a start point
-% start = randi(1000)
+start = 200
 
 % Choose the number of succseeding frames
-% N =
+N = 100
 
-ir = ImageReader(src, L, R, start, N);
+% ir = ImageReader(src, L, R, start, N);
 
 
 %% Output Settings
@@ -33,7 +33,7 @@ ir = ImageReader(src, L, R, start, N);
 dst = "output.avi";
 
 % Load Virual Background
-% bg = imread("Path\to\my\virtual\background")
+bg = "/Users/amna.najib/Documents/amna/CV/data/background.jpeg"
 
 % Select rendering mode
 mode = "substitute";
@@ -43,3 +43,5 @@ mode = "substitute";
 
 % Store Output?
 store = true;
+
+save('instance.mat', 'N', 'start', 'L', 'R', 'src', 'mode', 'store', 'bg', 'dst');
