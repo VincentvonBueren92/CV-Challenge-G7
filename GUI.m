@@ -203,8 +203,8 @@ while(1 && ~states.EXIT)
     mode = states.selected_mode;
     
     % Gets the frame of the left camera and of the right camera
-    frame_left = squeeze(left(:,:,1,:));
-    frame_right = squeeze(right(:,:,1,:));
+    frame_left = squeeze(left(:,:,2,:));
+    frame_right = squeeze(right(:,:,2,:));
     
     % Renders the frame of the left camera given the mode and bg
     rendered_frame = render(frame_left, mask, bg, mode);
@@ -214,7 +214,7 @@ while(1 && ~states.EXIT)
     
     % Show images for left and right camera
     imagesc(rendered_frame, 'Parent', handles.axes1);
-    imagesc(frame_right, 'Parent', handles.axes2);
+    imagesc(frame_left, 'Parent', handles.axes2);
     
     % Remove axes
     axis(handles.axes1,'off');
@@ -249,6 +249,9 @@ while(1 && ~states.EXIT)
             counter = states.gui_start;
         else
             %The video has finished and we exit the loop
+            
+            
+            
             break
         end
     end 
@@ -285,7 +288,7 @@ first_frame_right = squeeze(right(:,:,1,:));
 
 % Load first images in figures
 imagesc(first_frame_left,'Parent', handles.axes1);
-imagesc(first_frame_right,'Parent', handles.axes2);
+imagesc(first_frame_left,'Parent', handles.axes2);
 drawnow;
 
 % Remove axes in figures
