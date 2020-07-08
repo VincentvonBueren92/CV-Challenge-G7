@@ -68,7 +68,7 @@ import ImageReader.*;
 
 % Initiates State Struct
 global states;
-states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', './src/office.jpg', 'selected_mode', 'substitute');
+states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', './src/office.jpg', 'selected_mode', 'substitute', 'gui_save', 0);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = GUI_OutputFcn(hObject, eventdata, handles) 
@@ -94,7 +94,10 @@ contents = cellstr(get(hObject,'String'));
 selected_mode = contents{get(hObject,'Value')};
 
 var = '-----------';
+var1 = 'Choose a Mode';
 if strcmp(var,selected_mode)
+    return
+elseif strcmp(var1,selected_mode)
     return
 else
     states.selected_mode = selected_mode;
@@ -154,6 +157,16 @@ function save_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to save_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global states;
+
+if(strcmp(get(handles.save_btn,'String'),'RECORD'))
+    states.gui_save = 1;
+    set(handles.save_btn,'String','STOP RECORD');
+else
+    set(handles.save_btn,'String','RECORD');
+    states.gui_save = 0;
+end
+
 
 
 % --- Executes on button press in save_btn.
@@ -188,6 +201,10 @@ global states
 % Set the counter to chosen gui_start value (default is zero)
 counter = states.gui_start;
 
+dst = "output.avi";
+video_Object = VideoWriter(dst,'Motion JPEG AVI');
+open(video_Object);
+
 while(1 && ~states.EXIT)
     
     imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N);
@@ -208,6 +225,14 @@ while(1 && ~states.EXIT)
     
     % Renders the frame of the left camera given the mode and bg
     rendered_frame = render(frame_left, mask, bg, mode);
+    
+    % Checks if the user want to save a file
+    if states.gui_save
+        writeVideo(video_Object,rendered_frame);
+    % Checks if already content was written in the Video Object
+    elseif video_Object.Duration ~= 0
+        close(video_Object)
+    end
     
     % Delete figure stack to increase performance
     cla reset;
@@ -249,13 +274,13 @@ while(1 && ~states.EXIT)
             counter = states.gui_start;
         else
             %The video has finished and we exit the loop
-            
-            
-            
             break
         end
     end 
 end
+
+% Closes video object
+close(video_Object)
 
 % Clears all axes
 close all;
