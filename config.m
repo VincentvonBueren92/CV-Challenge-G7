@@ -2,13 +2,13 @@
 
 %% Generall Settings
 % Group number:
-% group_number = 7;
+group_number = 7;
 
 % Group members:
-% members = {'Amna', 'Hannes', 'Johannes', 'Andreas', 'Vincent'};
+members = {'Amna', 'Hannes', 'Johannes', 'Andreas', 'Vincent'};
 
 % Email-Address (from Moodle!):
-% mail = {'', '', '', '', 'ga92cot@mytum.de'};
+mail = {'', '', '', '', 'ga92cot@mytum.de'};
 
 
 %% Setup Image Reader
