@@ -25,6 +25,7 @@ classdef ImageReader < handle
     end
     
     methods
+        
         % Constructor
         function ir = ImageReader(src, L, R, varargin)
       
@@ -60,6 +61,7 @@ classdef ImageReader < handle
             ir.N = p.Results.N;
         end
         
+        % next() function as described in the challenge PDF
         function [left, right, loop, img_num] = next(this)
             
             % Persistent second loop variable. Will be updated to the actual 'loop' variable in the end
@@ -85,21 +87,6 @@ classdef ImageReader < handle
             % Image names of left/right camera
             img_list_l = dir(fullfile(scene_cam_l_path,'*.jpg'));
             img_list_r = dir(fullfile(scene_cam_r_path,'*.jpg'));
-            
-%             if ismac
-%                 img_list_l = dir([scene_cam_l_path '/*.jpg']);      % Image names
-%                 img_list_r = dir([scene_cam_l_path '/*.jpg']);
-%                 % Code to run on Mac platform
-%             elseif ispc
-%                 disp("ad");
-%                 img_list_l = dir([scene_cam_l_path '\*.jpg']) ;         % Image names
-%                 img_list_r = dir([scene_cam_l_path '\*.jpg']);
-%               
-%                 % Code to run on Windows platform
-%             else
-%                 disp('Platform not supported')
-%             end
-             
             
             % Tensors with the images of the left/right camera. Dimensions: 600 × 800 × (N + 1) × 3
             left = [];
@@ -141,6 +128,73 @@ classdef ImageReader < handle
                 % Add the latest images to the two tensors (600 × 800 × (N + 1) × 3)
                 left = cat(3, left, img_l);                  
                 right = cat(3, right, img_r);
+            end
+            
+            % Update the loop variable
+            loop = l;
+
+        end
+        
+        % Special version of the next() function that only provides a tensor to the left camera images
+        % We use this funciton to have more efficient code since we do not need the right camera images
+        function [left, loop, img_num] = next_left(this)
+            
+            % Persistent second loop variable. Will be updated to the actual 'loop' variable in the end
+            persistent l;
+            
+            % Init l
+            if isempty(l)
+                l = 0;
+            end           
+            
+            % Get scene folder name (e.g. 'P1E_S1') from the splitted up src path
+            path_splits = regexp(this.src, filesep, 'split');
+            scene_folder = char(path_splits(end)); 
+            
+            % Left camera folder inside the scene folder
+            cam_l_folder  = [scene_folder, '_C', num2str(this.L)];
+            
+            % Path of scene folder + left camera folder
+            scene_cam_l_path = fullfile(this.src, cam_l_folder);
+            
+            % Image names of left camera
+            img_list_l = dir(fullfile(scene_cam_l_path,'*.jpg'));
+            
+            % Tensor with the images of the left camera. Dimensions: 600 × 800 × (N + 1) × 3
+            left = [];
+            
+            % Calculation of the start and end value of the loop in which the images will be read
+            loop_start = 1 + this.start;
+            loop_end = 1 + this.start + this.N;
+            img_num = length(img_list_l);
+            
+            % Start at the beginning of the image folder if the loop variable was set to 1 in the last call
+            if l == 1
+                loop_start = 1;
+                loop_end = loop_start + this.N;
+                l = 0;
+            end
+            
+            % Check if there are not enough images left
+            if loop_end >= img_num
+                loop_end = img_num;
+                l = 1;
+                disp('End of scene_folder reached. Jumping back to the set start value in the next function call');
+            end
+           
+            % Read images
+            for k = loop_start : loop_end
+                % Create full path of the current left image 
+                img_name_l = fullfile(scene_cam_l_path, img_list_l(k).name); 
+                
+                % Read left image from path
+                img_l = imread(img_name_l);
+                
+                % Change dimensions of the images (600 × 800 × 3) to (600 × 800 × 1 × 3)
+                img_l = reshape(img_l, size(img_l,1), size(img_l,2), 1, 3);
+                
+                % Add the latest images to the two tensors (600 × 800 × (N + 1) × 3)
+                left = cat(3, left, img_l);
             end
             
             % Update the loop variable
