@@ -65,8 +65,10 @@ guidata(hObject, handles);
 % Import ImageReader class
 import ImageReader.*;
 
+% Initializes the save container for videos
+global saved_Video;
 
-% Initiates State Struct
+% Initializes State Struct
 global states;
 states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', './src/office.jpg', 'selected_mode', 'substitute', 'gui_save', 0);
 
@@ -158,13 +160,23 @@ function save_btn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global states;
+global saved_Video;
+
 
 if(strcmp(get(handles.save_btn,'String'),'RECORD'))
+    
     states.gui_save = 1;
+    
+    dst = "output.avi";
+    saved_Video = VideoWriter(dst,'Motion JPEG AVI');
+    open(saved_Video);
+    
     set(handles.save_btn,'String','STOP RECORD');
 else
     set(handles.save_btn,'String','RECORD');
     states.gui_save = 0;
+    % Closes video object
+    close(saved_Video);
 end
 
 
@@ -197,13 +209,11 @@ function start_btn_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global states
+global saved_Video
 
 % Set the counter to chosen gui_start value (default is zero)
 counter = states.gui_start;
 
-dst = "output.avi";
-video_Object = VideoWriter(dst,'Motion JPEG AVI');
-open(video_Object);
 
 while(1 && ~states.EXIT)
     
@@ -228,10 +238,7 @@ while(1 && ~states.EXIT)
     
     % Checks if the user want to save a file
     if states.gui_save
-        writeVideo(video_Object,rendered_frame);
-    % Checks if already content was written in the Video Object
-    elseif video_Object.Duration ~= 0
-        close(video_Object)
+        writeVideo(saved_Video,rendered_frame);
     end
     
     % Delete figure stack to increase performance
@@ -280,7 +287,7 @@ while(1 && ~states.EXIT)
 end
 
 % Closes video object
-close(video_Object)
+close(saved_Video);
 
 % Clears all axes
 close all;
