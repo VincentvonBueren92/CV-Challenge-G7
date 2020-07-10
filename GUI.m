@@ -86,12 +86,7 @@ message = {'Hi there!', ' ', 'This is just a quick info for you!', ' ',  'First,
 
 % Info window when opening GUI
 h=msgbox(message, 'Introduction','help');
-
-     
-
-
-
-
+  
 
 % ************************ Choose Mode ************************************
 % --- Executes on selection change in choose_mode.
@@ -173,16 +168,28 @@ global saved_Video;
 
 if(strcmp(get(handles.save_btn,'String'),'RECORD'))
     
+    % Sets the state variable for saving to 1 so that new frames can be
+    % added
     states.gui_save = 1;
     
+    % Defines output name for later saving
     dst = "output.avi";
+    
+    % Initializes Videowriter object
     saved_Video = VideoWriter(dst,'Motion JPEG AVI');
+    
+    % Opens object for writing
     open(saved_Video);
     
+    % Change of naming of button
     set(handles.save_btn,'String','STOP RECORD');
 else
+    % Change of naming of button
     set(handles.save_btn,'String','RECORD');
+    
+    % Sets the state variable back to zero to signal end of recording
     states.gui_save = 0;
+    
     % Closes video object
     close(saved_Video);
 end
