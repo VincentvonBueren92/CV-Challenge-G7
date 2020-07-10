@@ -82,6 +82,17 @@ function varargout = GUI_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
+message = {'Hi there!', ' ', 'This is just a quick info for you!', ' ',  'First, you have to browse a scene with the Browse button.', ' ', 'Second you can choose the start value, mode and also your preferred background image (JPG).', ' ', 'Now, you can start the videos with the START button... with the PAUSE and PLAY button, you can manipulate the playing.', ' ', 'With the LOOP button, you can choose to play the videos in an infinite loop.', ' ', 'Finally, with the RECORD button, you can record and then save the rendered video.', ' ', 'ENJOY :)' };
+
+% Info window when opening GUI
+h=msgbox(message, 'Introduction','help');
+
+     
+
+
+
+
+
 % ************************ Choose Mode ************************************
 % --- Executes on selection change in choose_mode.
 function choose_mode_Callback(hObject, eventdata, handles)
@@ -105,9 +116,6 @@ else
     states.selected_mode = selected_mode;
 end
     
-
-
-
 
 % --- Executes during object creation, after setting all properties.
 function choose_mode_CreateFcn(hObject, eventdata, handles)
@@ -418,13 +426,3 @@ function pause_btn_Callback(hObject, eventdata, handles)
 
 % Stops the execution of the videos
 uiwait();
-
-
-
-
-% TODO
-% - CREATE A MSG BOX WITH, INSTRUCTIONS...CHOOSE START NUMBER
-% - YOU CAN ONLY CHOOSE VALID SOURCE FOLDERS
-% - REALLY IMPORTANT IN CURRENT IMAGEREADER CLASS THE LOOP VALUE HAS TO BE
-% SET BACK TO ZERO
-%     
