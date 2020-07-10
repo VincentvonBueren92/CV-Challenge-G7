@@ -70,7 +70,7 @@ global saved_Video;
 
 % Initializes State Struct
 global states;
-states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', './src/office.jpg', 'selected_mode', 'substitute', 'gui_save', 0);
+states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', 0, 'selected_mode', 'substitute', 'gui_save', 0);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = GUI_OutputFcn(hObject, eventdata, handles) 
@@ -234,11 +234,23 @@ while(1 && ~states.EXIT)
     % Segmentation of the images and creation of mask
     mask = segmentation(left, right);
     
-    % Returns selected item from choose background
-    bg = states.selected_bg;
-    
     % Returns selected mode
     mode = states.selected_mode;
+    
+    % Returns selected item from choose background
+    if (states.selected_bg == 0) & (states.selected_mode == 'substitute')
+     
+        % Message box for background selection
+        message = {'Oh boy!', ' ', 'You forgot to choose a background image!', ' ',  'Remember, it has to be a JPG file'};
+        h=msgbox(message, 'Choose a background image');
+        
+        % Requests for background selection
+        browse_bg_Callback();
+        
+        bg = states.selected_bg;
+    else
+        bg = states.selected_bg;
+    end
     
     % Gets the frame of the left camera and of the right camera
     frame_left = squeeze(left(:,:,2,:));
