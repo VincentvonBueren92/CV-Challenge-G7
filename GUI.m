@@ -226,7 +226,10 @@ counter = states.gui_start;
 while(1 && ~states.EXIT)
     
     imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N);
-    [left, right, loop, img_num] = imageReadObject.next();
+    [left, loop, img_num] = imageReadObject.next_left();
+    
+    % Fake unused right tensor 
+    right = left;
     
     % Segmentation of the images and creation of mask
     mask = segmentation(left, right);
@@ -239,7 +242,6 @@ while(1 && ~states.EXIT)
     
     % Gets the frame of the left camera and of the right camera
     frame_left = squeeze(left(:,:,2,:));
-    frame_right = squeeze(right(:,:,2,:));
     
     % Renders the frame of the left camera given the mode and bg
     rendered_frame = render(frame_left, mask, bg, mode);
@@ -320,11 +322,10 @@ counter = states.gui_start;
 imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N);
 
 % get the first three images of camera left and right
-[left, right, loop, img_num] = imageReadObject.next();
+[left, loop, img_num] = imageReadObject.next_left();
 
 % Prepare frames
 first_frame_left = squeeze(left(:,:,1,:));
-first_frame_right = squeeze(right(:,:,1,:));
 
 % Load first images in figures
 imagesc(first_frame_left,'Parent', handles.axes1);
