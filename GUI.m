@@ -249,7 +249,7 @@ while(1 && ~states.EXIT && ~states.standby_mode)
         % Checks for operating systems and extracts the filename of image
         if ispc
             splitted_path_arr = strsplit(bg,'\');
-            set(handles.bg_presented, 'String', splitted_path_arr(-1));
+            set(handles.bg_presented, 'String', splitted_path_arr(end));
         else
             splitted_path_arr = strsplit(bg,'/');
             set(handles.bg_presented, 'String', splitted_path_arr(end));
