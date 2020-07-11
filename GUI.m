@@ -70,7 +70,7 @@ global saved_Video;
 
 % Initializes State Struct
 global states;
-states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', 0, 'selected_mode', 'background', 'gui_save', 0, 'standby_mode', 0);
+states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', 0, 'selected_mode', 'background', 'gui_save', 0, 'standby_mode', 0, 'max_num_frames', 100000);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = GUI_OutputFcn(hObject, eventdata, handles) 
@@ -123,30 +123,6 @@ function choose_mode_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-% ************************ Choose Start Number ****************************
-function select_start_Callback(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit2 as text
-%        str2double(get(hObject,'String')) returns contents of edit2 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function select_start_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 % ************************ Stop and Play **********************************
 function play_btn_Callback(hObject, eventdata, handles)
@@ -247,6 +223,9 @@ while(1 && ~states.EXIT && ~states.standby_mode)
     % Returns selected mode & background
     mode = states.selected_mode;
     bg = states.selected_bg;
+    
+    % Saves the max number of max_num_frames
+    states.max_num_frames = img_num;
 
     % Checks if the substitute mode is chosen, but a background image is
     % missing
@@ -308,7 +287,7 @@ while(1 && ~states.EXIT && ~states.standby_mode)
     axis(handles.axes2,'off');
 
     % Update the shown frame counter
-    frame_text1 = strcat(' / ', num2str(img_num));
+    frame_text1 = strcat(' / ', num2str(img_num-3));
     frame_text2 = strcat(num2str(counter), frame_text1);
     set(handles.frame_num, 'String', frame_text2);
     
@@ -360,6 +339,9 @@ imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, 
 % get the first three images of camera left and right
 [left, loop, img_num] = imageReadObject.next_left();
 
+% Saves the max number of max_num_frames
+states.max_num_frames = img_num;
+
 % Prepare frames
 first_frame_left = squeeze(left(:,:,1,:));
 
@@ -393,7 +375,8 @@ input=menu('Are you sure that you want to quit the simulation?',...
       case 2
           return
   end
-
+  
+ % ************************ Choose Start Number ***************************
 function choose_start_Callback(hObject, eventdata, handles)
 % hObject    handle to choose_start (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -404,8 +387,19 @@ function choose_start_Callback(hObject, eventdata, handles)
 
 % Update the start value
 global states;
-states.gui_start = str2num(get(hObject,'String'));
 
+% Represents the selected value for start
+chosen_num = str2num(get(hObject,'String'));
+
+% Checks if the chosen number is in the bounds of max. possible frames in
+% scene
+if chosen_num >= states.max_num_frames-3
+    message = {'Oh no!!!', ' ', 'The frame you choose is to big, please choose another number' };
+    h=msgbox(message, 'Frame does not exist','warn');
+else
+    states.gui_start = chosen_num;
+end
+    
 % --- Executes during object creation, after setting all properties.
 function choose_start_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to choose_start (see GCBO)
@@ -455,7 +449,7 @@ bg_image_path = fullfile(path_name, bg_name);
 states.selected_bg = bg_image_path;
 
 
-% --- Executes on button press in pause_btn.
+% ************************ Pause the Videor *******************************
 function pause_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to pause_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
