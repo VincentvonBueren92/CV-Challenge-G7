@@ -6,8 +6,6 @@ This project is the result of a challenge from the Computer Vision Department of
 
 The data for this challenge is the ChokePoint dataset, which consists of recordings from surveillance cameras at various portals (P1, P2). There are three cameras each (C1, C2, C3), which film the same scenes (S1 - S5) simultaneously. Each portal was also recorded once from the inside (E enter) and once from the outside (L leave). The resulting images have a size of 800×600 pixels and were taken at 30fps.
 
-__Link:__ http://arma.sourceforge.net/chokepoint/
-
 
 ## Challenge Requirements
 
@@ -61,7 +59,7 @@ The GUI should be opened with the command start gui and may work independently o
 
 ## Application examples
 ### Segmentation Output from the sequence xxx frame yyyy
- ~~Missing titles
+ ~~Missing titles~~
  <table>
   <tr>
     <td>Missing title (including mode + frame)</td>
@@ -83,7 +81,9 @@ The GUI should be opened with the command start gui and may work independently o
     <td><img src="Imgs/rend_fig4.png"></td>
   </tr>
  </table>
+ 
 ### GUI Interface 
+
 <table>
   <tr>
     <td>Opening screen of the gui.</td>
@@ -126,6 +126,7 @@ The GUI should be opened with the command start gui and may work independently o
 - Y. Wong, S. Chen, S. Mau, C. Sanderson, B.C. Lovell
 Patch-based Probabilistic Image Quality Assessment for Face Selection and Improved Video-based Face Recognition
 IEEE Biometrics Workshop, Computer Vision and Pattern Recognition (CVPR) Workshops, pages 81-88. IEEE, June 2011.
-- Chokepoint Dataset (http://arma.sourceforge.net/chokepoint)
+- Chokepoint Dataset __Link:__ http://arma.sourceforge.net/chokepoint/
+
 
 
