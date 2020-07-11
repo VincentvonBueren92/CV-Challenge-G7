@@ -40,7 +40,7 @@ The GUI should be opened with the command start gui and may work independently o
 
 ## Usage Instructions
 ### Standalone usage using challenge.m (suitable for command line run)
-- Run challenge.m provided in the source code, a video of thesegmented video is then saved under the destination/name set in config.m.
+- Run challenge.m provided in the source code, a video of the segmented video is then saved under/with the destination/name set in config.m.
 ```matlab
 > challenge
 ```
