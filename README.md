@@ -10,18 +10,32 @@ __Link:__ http://arma.sourceforge.net/chokepoint/
 
 ## Challenge Requirements
 
-* The group has to implement a ImageReader class, which is able to play two of the three video streams from a scene folder as an endless loop,
-* The group has to implement a way to load images. In order to load an appropriate amount of images from the camera folders, the class should provide the method .next(),
-* The group has to implement a function segmentation(left, right) which uses the two previously created tensors left and right with successive image pairs to estimate foreground and background for the first image pair,
+* The group has to implement a ImageReader class, which is able to play two of the three video streams from a scene folder as an endless loop.
+* The group has to implement a way to load images. In order to load an appropriate amount of images from the camera folders, the class should provide the method .next().
+* The group has to implement a function segmentation(left, right) which uses the two previously created tensors left and right with successive image pairs to estimate foreground and background for the first image pair.
 * The group has to implement a function render(frame, mask, bg, render mode), which can process the current image of the left camera frame using the corresponding segmentation mask mask. 
 
-** The parameter render mode selects between the following modes:
-*** foreground: The background is set to black. The foreground in the image should be as little as can be changed.
-*** background: The foreground is set to black and only the background is visible.
-*** overlay: Foreground and background are set to black with good distinguishable colours are dyed transparent.
-*** substitute: Replaces the background with a virtual background which is passed in bg. 
-*** The virtual background bg is an RGB image with any size N × M × 3
+* The parameter render mode selects between the following modes: 
 
+- foreground: The background is set to black. The foreground in the image should be as little as can be changed.
+- background: The foreground is set to black and only the background is visible.
+- overlay: Foreground and background are set to black with good distinguishable colours are dyed transparent.
+- substitute: Replaces the background with a virtual background which is passed in bg. 
+- The virtual background bg is an RGB image with any size N × M × 3.
+
+* The group has to complete the config.m file. This file is always called before challenge.m and fills the workspace with all necessary variables, settings and paths. 
+* The group has to implement challenge.m whcih executes the previously implemented functions in a loop until the selected scene folder is exhausted. In addition, the group has measure the time the program needs to execute the task and store the value in the variable elapsed time.
+* Finally, the group has to implement a Graphical User Interface which is able to:
+
+- Select any scene folder path
+- A file path for a virtual background select
+- Selection of the starting point (see variable start)
+- Selection of the rendering mode (see Variable mode)
+- Display of the stereo inputs and the selected output stream
+- Playback control: Start, Stop, Loop (endless playback)
+- Saving the rendered movie under any file path
+
+The GUI should be opened with the command start gui and may work independently of challenge.m or config.m.
 
 
 ## Graphical User Interface
