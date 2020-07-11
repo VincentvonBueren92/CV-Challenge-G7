@@ -68,7 +68,6 @@ The GUI should be opened with the command start gui and may work independently o
 
 
 ### GUI Interface
-![Alt Text](Imgs/gui_fig6.png)
 
 <table>
   <tr>
@@ -81,6 +80,27 @@ The GUI should be opened with the command start gui and may work independently o
   </tr>
  </table>
  
+ <table>
+  <tr>
+    <td>Replay of current frame 298 in the substitute mode.</td>
+     <td>Replay of current frame 330 in the foreground mode.</td>
+  </tr>
+  <tr>
+    <td><img src="Imgs/gui_fig8.png"></td>
+    <td><img src="Imgs/gui_fig9.png"></td>
+  </tr>
+ </table>
+ 
+ <table>
+  <tr>
+    <td>Replay of current frame 383 in the background mode.</td>
+     <td>Replay of current frame 409 in the overlay mode.</td>
+  </tr>
+  <tr>
+    <td><img src="Imgs/gui_fig10.png"></td>
+    <td><img src="Imgs/gui_fig11.png"></td>
+  </tr>
+ </table> 
  
 Figure 6: Opening screen of the gui.
 
