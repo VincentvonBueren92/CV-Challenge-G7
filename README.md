@@ -68,7 +68,7 @@ The GUI should be opened with the command start gui and may work independently o
 
 
 ### GUI Interface
-
+![Alt Text](Imgs/gui_fig6.jpg)
 Figure 6: Opening screen of the gui.
 
 Figure 7: The gui asks for a background image selection.
