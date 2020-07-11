@@ -238,7 +238,7 @@ while(1 && ~states.EXIT && ~states.standby_mode)
     if (bg == 0) & strcmp(mode,'substitute')
      
         % Message box for background selection
-        message = {'Oh boy!', ' ', 'You forgot to choose a background image!', ' ',  'Remember, it has to be a JPG file'};
+        message = {'Oh noooo!!!', ' ', 'You forgot to choose a background image!', ' ',  'Remember, it has to be a JPG file'};
         h=msgbox(message, 'Choose a background image');
         
         % Requests for background selection
