@@ -8,7 +8,7 @@ group_number = 7;
 members = {'Amna', 'Hannes', 'Johannes', 'Andreas', 'Vincent'};
 
 % Email-Address (from Moodle!):
-mail = {'amna.najib@tum.de', '', 'johannes.ernst@tum.de', 'ga94toq@tum.de', 'ga92cot@mytum.de'};
+mail = {'amna.najib@tum.de', 'hannes.burrichter@tum.de', 'johannes.ernst@tum.de', 'ga94toq@tum.de', 'ga92cot@mytum.de'};
 
 
 %% Setup Image Reader
@@ -16,21 +16,21 @@ mail = {'amna.najib@tum.de', '', 'johannes.ernst@tum.de', 'ga94toq@tum.de', 'ga9
 src = "/Users/amna.najib/Documents/amna/CV/data/P1E_S1";
 
 % Select Cameras
-L = 1
-R = 2
+L = 1;
+R = 2;
 
 % Choose a start point
-start = 200
+start = 200;
 
 % Choose the number of succseeding frames
-N = 100
+N = 2;
 
 % ir = ImageReader(src, L, R, start, N);
 
 
 %% Output Settings
 % Output Path
-dst = "output.avi";
+dest = "output.avi";
 
 % Load Virual Background
 bg = "/Users/amna.najib/Documents/amna/CV/data/background.jpeg"
@@ -44,4 +44,4 @@ mode = "substitute";
 % Store Output?
 store = true;
 
-save('instance.mat', 'N', 'start', 'L', 'R', 'src', 'mode', 'store', 'bg', 'dst');
+save('instance.mat', 'N', 'start', 'L', 'R', 'src', 'mode', 'store', 'bg', 'dest');

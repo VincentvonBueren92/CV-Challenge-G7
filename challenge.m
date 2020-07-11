@@ -37,7 +37,7 @@ loop = 0
 ImgReaderObj = ImageReader(src, L, R, start, N);
 %% Write Movie to Disk
 if store
-    v = VideoWriter(dst,'Motion JPEG AVI');
+    v = VideoWriter(dest,'Motion JPEG AVI');
     open(v);
 
     while loop ~= 1

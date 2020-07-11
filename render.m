@@ -1,8 +1,8 @@
-function [result] = render(frame,mask,bg,mode)
+function [result] = render(frame,mask,bg,render_mode)
   % Add function description here
   %
   %
-  switch mode
+  switch render_mode
       case 'foreground'
           % mask original frame
           result(:,:,1) = frame(:,:,1).*uint8(mask);
@@ -67,7 +67,7 @@ function [result] = render(frame,mask,bg,mode)
         result(:,:,3) = comp_masked_bg(:,:,3)+masked_Im(:,:,3);
       
       otherwise 
-        disp('no valid mode')
+        disp('no valid render_mode')
   end
   
 
