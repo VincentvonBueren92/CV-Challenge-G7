@@ -39,7 +39,7 @@ bg = "/Users/amna.najib/Documents/amna/CV/data/background.jpeg"
 mode = "substitute";
 
 % Create a movie array
-% movie =
+movie = []
 
 % Store Output?
 store = true;

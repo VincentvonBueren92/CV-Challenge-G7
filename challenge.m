@@ -1,6 +1,10 @@
 %% Computer Vision Challenge 2020 challenge.m
+
 % Call the function config.m
 config;
+% Import ImageReader
+import ImageReader.*;
+
 %% Start timer here
 tStart =  tic;
 
@@ -8,52 +12,54 @@ tStart =  tic;
 ImgReaderObj = ImageReader(src, L, R, start, N);
 
 %% Generate Movie
-% Init loop
+% Init loop variable
 loop = 0;
 
 while loop ~= 1
-  % Get next image tensors
-  [left, right, loop] = ImgReaderObj.next();
+	% Get next image tensors
+    [left, loop, ~] = ImgReaderObj.next_left();
+    ImgReaderObj.start = ImgReaderObj.start +1;
+      
+    % Generate binary mask
+    right = left;
+    mask = segmentation(left, right);
 
-  % Generate binary mask
-  mask = segmentation(left, right);
+    % Get the left 3D tensor
+    left_frame = squeeze(left(:,:,2,:)); 
 
-  % Get the left and right frame as 3D Tensor (n_x, n_y, 3)
-  right_frame = squeeze(right(:,:, 1,:)); 
-  left_frame = squeeze(left(:,:,1,:)); 
-
-  % Render new frame
-    new_frame = render(left_frame, mask, bg, mode);
+    % Render new frame
+    movie = cat(4, movie,render(left_frame, mask, bg, mode)) ;
+      
 end
 
 %% Stop timer here
 elapsed_time = 0;
-elapased_time = toc(tStart);
+elapsed_time = toc(tStart);
 
-% Init loop with 0
-loop = 0
+disp("The running time(s) of rendering is: "); disp(elapsed_time)
 
-% Define Instance of imageReader
-ImgReaderObj = ImageReader(src, L, R, start, N);
+%% Start time for saving the video
+tStart =  tic;
 %% Write Movie to Disk
 if store
-    v = VideoWriter(dest,'Motion JPEG AVI');
+    [~, ~, ~, N] = size(movie)
+    % Create a video Instance
+    v = VideoWriter(dst,'Motion JPEG AVI');
+    % Set the fps to 30
+    v.FrameRate = 30;
+    % Open the video
     open(v);
 
-    while loop ~= 1
-      % Get next image tensors
-      [left, right, loop] = ImgReaderObj.next();
-
-      % Generate binary mask
-      mask = segmentation(left, right);
-
-      % Get the left and right frame as 3D Tensor (n_x, n_y, 3)
-      left_frame = squeeze(left(:,:,1,:)); 
-
-      % Render new frame
-        new_frame = render(left_frame, mask, bg, mode);
+    % Loop over movie to save the movie
+    for i=1:N
+        new_frame = squeeze(movie(:,:,:,i));
         writeVideo(v,new_frame);
     end
+    % Close the video after saving
+    close(v);
 end
 
-close(v);
+%% Stop time (for saving the video)
+
+tEnd = toc(tStart);
+disp("The running time(s) of saving the video is: "); disp(tEnd)
