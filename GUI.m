@@ -70,7 +70,7 @@ global saved_Video;
 
 % Initializes State Struct
 global states;
-states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', 0, 'selected_mode', 'background', 'gui_save', 0);
+states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', 0, 'selected_mode', 'background', 'gui_save', 0, 'standby_mode', 0);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = GUI_OutputFcn(hObject, eventdata, handles) 
@@ -228,9 +228,13 @@ global saved_Video
 % Set the counter to chosen gui_start value (default is zero)
 counter = states.gui_start;
 
+% Resets the standbye mode to zero for replay of scenes
+states.standby_mode = 0;
 
-while(1 && ~states.EXIT)
+while(1 && ~states.EXIT && ~states.standby_mode)
     
+    % Creates an ImageReader object with current counter value and chosen
+    % configurations
     imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N);
     [left, loop, img_num] = imageReadObject.next_left();
     
@@ -244,7 +248,8 @@ while(1 && ~states.EXIT)
     mode = states.selected_mode;
     bg = states.selected_bg;
 
-    % Returns selected item from choose background
+    % Checks if the substitute mode is chosen, but a background image is
+    % missing
     if (bg == 0) & strcmp(mode,'substitute')
      
         % Message box for background selection
@@ -265,6 +270,7 @@ while(1 && ~states.EXIT)
             set(handles.bg_presented, 'String', splitted_path_arr(end));
         end
         
+    % Checks if substitute mode is chosen (the bg image is defined)
     elseif strcmp(mode,'substitute')
         
         bg = states.selected_bg;
@@ -321,7 +327,7 @@ while(1 && ~states.EXIT)
             counter = states.gui_start;
         else
             %The video has finished and we exit the loop
-            break
+            states.standby_mode = 1;
         end
     end 
 end
