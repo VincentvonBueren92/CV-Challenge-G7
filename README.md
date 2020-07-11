@@ -41,6 +41,9 @@ The GUI should be opened with the command start gui and may work independently o
 ## Usage Instructions
 ### Standalone usage using challenge.m (suitable for command line run)
 - Run challenge.m provided in the source code, a video of thesegmented video is then saved under the destination/name set in config.m.
+```matlab
+> challenge
+```
 ### GUI usage 
 #### How to interact with the GUI
 - In order to run the GUI, one can run the GUI.m file in matlab. There will be two windows present. An introduction window which explains the different buttons and their usability and the gui itself.
@@ -63,6 +66,9 @@ The GUI should be opened with the command start gui and may work independently o
 ## Application examples
 ### Segmentation of frames from the sequence xxx
 
+
+### GUI Interface
+
 Figure 6: Opening screen of the gui.
 
 Figure 7: The gui asks for a background image selection.
@@ -75,6 +81,7 @@ Figure 10: Replay of current frame 383 in the background mode.
 
 Figure 11: Replay of current frame 409 in the overlay mode.
 
+### Rendered video from sequence xxx
 
 
 ## References
