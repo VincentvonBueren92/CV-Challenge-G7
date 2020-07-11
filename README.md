@@ -118,7 +118,7 @@ The GUI should be opened with the command start gui and may work independently o
 ## Packages included and Matlab version
 
 - Tested on Matlab 2020a
-- Image Processing Toolbox (~~Add-on on Matlab platform~~)
+- Image Processing Toolbox (https://de.mathworks.com/products/image.html)
 
 ## References
 - Y. Wong, S. Chen, S. Mau, C. Sanderson, B.C. Lovell
