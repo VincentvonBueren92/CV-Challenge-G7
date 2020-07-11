@@ -17,23 +17,23 @@ __Link:__ http://arma.sourceforge.net/chokepoint/
 
 * The parameter render mode selects between the following modes: 
 
-- foreground: The background is set to black. The foreground in the image should be as little as can be changed.
-- background: The foreground is set to black and only the background is visible.
-- overlay: Foreground and background are set to black with good distinguishable colours are dyed transparent.
-- substitute: Replaces the background with a virtual background which is passed in bg. 
-- The virtual background bg is an RGB image with any size N × M × 3.
+   1) foreground: The background is set to black. The foreground in the image should be as little as can be changed.
+   2) background: The foreground is set to black and only the background is visible.
+   3) overlay: Foreground and background are set to black with good distinguishable colours are dyed transparent.
+   4= substitute: Replaces the background with a virtual background which is passed in bg. 
+   The virtual background bg is an RGB image with any size N × M × 3.
 
 * The group has to complete the config.m file. This file is always called before challenge.m and fills the workspace with all necessary variables, settings and paths. 
 * The group has to implement challenge.m whcih executes the previously implemented functions in a loop until the selected scene folder is exhausted. In addition, the group has measure the time the program needs to execute the task and store the value in the variable elapsed time.
 * Finally, the group has to implement a Graphical User Interface which is able to:
 
-- Select any scene folder path
-- A file path for a virtual background select
-- Selection of the starting point (see variable start)
-- Selection of the rendering mode (see Variable mode)
-- Display of the stereo inputs and the selected output stream
-- Playback control: Start, Stop, Loop (endless playback)
-- Saving the rendered movie under any file path
+   1) Select any scene folder path,
+   2) A file path for a virtual background select,
+   3) Selection of the starting point (see variable start),
+   4) Selection of the rendering mode (see Variable mode),
+   5) Display of the stereo inputs and the selected output stream,
+   6) Playback control: Start, Stop, Loop (endless playback),
+   7) Saving the rendered movie under any file path.
 
 The GUI should be opened with the command start gui and may work independently of challenge.m or config.m.
 
