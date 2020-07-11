@@ -41,6 +41,8 @@ function [mask] = segmentation(left,right)
     im_diff_grey = rgb2gray(im_diff_RGB_tensor);
     % create binary out of the grey image
     im_diff_bin = imbinarize(im_diff_grey,0.01);
+    % get rid of black pixel within white areas
+    im_diff_bin = imfill(im_diff_bin,'holes');
     % choose only binary areas that are bigger than 50 pixels
     im_diff_bin = bwareaopen(im_diff_bin, 50);
     
