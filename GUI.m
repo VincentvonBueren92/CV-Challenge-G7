@@ -70,7 +70,7 @@ global saved_Video;
 
 % Initializes State Struct
 global states;
-states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', 0, 'selected_mode', 'substitute', 'gui_save', 0);
+states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', 0, 'selected_mode', 'background', 'gui_save', 0);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = GUI_OutputFcn(hObject, eventdata, handles) 
@@ -165,7 +165,6 @@ function save_btn_Callback(hObject, eventdata, handles)
 global states;
 global saved_Video;
 
-
 if(strcmp(get(handles.save_btn,'String'),'RECORD'))
     
     % Sets the state variable for saving to 1 so that new frames can be
@@ -241,11 +240,12 @@ while(1 && ~states.EXIT)
     % Segmentation of the images and creation of mask
     mask = segmentation(left, right);
     
-    % Returns selected mode
+    % Returns selected mode & background
     mode = states.selected_mode;
-    
+    bg = states.selected_bg;
+
     % Returns selected item from choose background
-    if (states.selected_bg == 0) & (states.selected_mode == 'substitute')
+    if (bg == 0) & strcmp(mode,'substitute')
      
         % Message box for background selection
         message = {'Oh boy!', ' ', 'You forgot to choose a background image!', ' ',  'Remember, it has to be a JPG file'};
@@ -255,8 +255,28 @@ while(1 && ~states.EXIT)
         browse_bg_Callback();
         
         bg = states.selected_bg;
-    else
+        
+        % Checks for operating systems and extracts the filename of image
+        if ispc
+            splitted_path_arr = strsplit(bg,'\');
+            set(handles.bg_presented, 'String', splitted_path_arr(-1));
+        else
+            splitted_path_arr = strsplit(bg,'/');
+            set(handles.bg_presented, 'String', splitted_path_arr(end));
+        end
+        
+    elseif strcmp(mode,'substitute')
+        
         bg = states.selected_bg;
+        
+        % Checks for operating systems and extracts the filename of image
+        if ispc
+            splitted_path_arr = strsplit(bg,'\');
+            set(handles.bg_presented, 'String', splitted_path_arr(-1));
+        else
+            splitted_path_arr = strsplit(bg,'/');
+            set(handles.bg_presented, 'String', splitted_path_arr(end));
+        end
     end
     
     % Gets the frame of the left camera and of the right camera
@@ -286,17 +306,8 @@ while(1 && ~states.EXIT)
     frame_text2 = strcat(num2str(counter), frame_text1);
     set(handles.frame_num, 'String', frame_text2);
     
-    % Present the chosen mode and background
+    % Present the chosen mode
     set(handles.mode_presented, 'String', mode);
-    
-    % Checks for operating systems and extracts the filename of image
-    if ispc
-        splitted_path_arr = strsplit(bg,'\');
-        set(handles.bg_presented, 'String', splitted_path_arr(-1));
-    else
-        splitted_path_arr = strsplit(bg,'/');
-        set(handles.bg_presented, 'String', splitted_path_arr(end));
-    end
         
     drawnow;
     % Increment the frame counter
@@ -315,14 +326,8 @@ while(1 && ~states.EXIT)
     end 
 end
 
-% Closes video object
-close(saved_Video);
-
-% Clears all axes
-close all;
 
 % ************************ BROWSE *****************************************
-% --- Executes on button press in pushbutton1.
 function browse_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -336,6 +341,12 @@ states.be_src = uigetdir();
 
 % Assigns counter to selected start value
 counter = states.gui_start;
+
+% User pressed cancel in the src selection
+if ~ischar(states.be_src )
+  disp('User pressed Cancel');
+  return;  % Or what ever is applicable
+end
 
 % Instatiates ImageReader object
 imageReadObject = ImageReader(states.be_src, states.be_L, states.be_R, counter, states.be_N);
