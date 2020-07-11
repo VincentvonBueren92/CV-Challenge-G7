@@ -37,6 +37,26 @@ __Link:__ http://arma.sourceforge.net/chokepoint/
 
 The GUI should be opened with the command start gui and may work independently of challenge.m or config.m.
 
+## Packages included and Matlab version
+
+- Tested on Matlab 2020a
+- Image Processing Toolbox (Add-on on Matlab platform)
+
+
+## Screenshots
+
+Figure 6: Opening screen of the gui.
+
+Figure 7: The gui asks for a background image selection.
+
+Figure 8: Replay of current frame 298 in the substitute mode.
+
+Figure 9: Replay of current frame 330 in the foreground mode.
+
+Figure 10: Replay of current frame 383 in the background mode.
+
+Figure 11: Replay of current frame 409 in the overlay mode.
+
 
 ## Graphical User Interface
 
@@ -87,21 +107,5 @@ To get a comprehensive user experience, the GUI can also be exited with an exit 
 Finally, snapshots from the interaction with the GUI are presented.
 
 
-Figure 6: Opening screen of the gui.
-
-Figure 7: The gui asks for a background image selection.
-
-Figure 8: Replay of current frame 298 in the substitute mode.
-
-Figure 9: Replay of current frame 330 in the foreground mode.
-
-Figure 10: Replay of current frame 383 in the background mode.
-
-Figure 11: Replay of current frame 409 in the overlay mode.
 
 
-## ImageReader class
-
-## Segmentation
-
-## Rendering
