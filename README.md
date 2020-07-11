@@ -61,11 +61,11 @@ The GUI should be opened with the command start gui and may work independently o
 
 ## Application examples
 ### Segmentation Output from the sequence xxx frame yyyy
- 
+ ~~Missing titles
  <table>
   <tr>
-    <td>![#f03c15](Missing title (including mode + frame))</td>
-     <td>Missing title (including mode + frame)</td>
+    <td>Missing title (including mode + frame)</td>
+     <td> Missing title (including mode + frame) </td>
   </tr>
   <tr>
     <td><img src="Imgs/rend_fig1.png"></td>
@@ -121,7 +121,7 @@ The GUI should be opened with the command start gui and may work independently o
 ## Packages included and Matlab version
 
 - Tested on Matlab 2020a
-- Image Processing Toolbox (Add-on on Matlab platform)
+- Image Processing Toolbox (~~Add-on on Matlab platform~~)
 
 ## References
 - Y. Wong, S. Chen, S. Mau, C. Sanderson, B.C. Lovell
