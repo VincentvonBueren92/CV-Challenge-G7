@@ -15,13 +15,12 @@ __Link:__ http://arma.sourceforge.net/chokepoint/
 * The group has to implement a function segmentation(left, right) which uses the two previously created tensors left and right with successive image pairs to estimate foreground and background for the first image pair,
 * The group has to implement a function render(frame, mask, bg, render mode), which can process the current image of the left camera frame using the corresponding segmentation mask mask. 
 
-The parameter render mode selects between the following modes:
-- foreground: The background is set to black. The foreground in the image should be as little as can be changed.
-- background: The foreground is set to black and only the background is visible.
-- overlay: Foreground and background are set to black with good distinguishable colours are dyed transparent.
-- substitute: Replaces the background with a virtual background which is passed in bg. 
-
-The virtual background bg is an RGB image with any size N × M × 3
+** The parameter render mode selects between the following modes:
+*** foreground: The background is set to black. The foreground in the image should be as little as can be changed.
+*** background: The foreground is set to black and only the background is visible.
+*** overlay: Foreground and background are set to black with good distinguishable colours are dyed transparent.
+*** substitute: Replaces the background with a virtual background which is passed in bg. 
+*** The virtual background bg is an RGB image with any size N × M × 3
 
 
 
