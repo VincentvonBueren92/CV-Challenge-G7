@@ -69,6 +69,21 @@ The GUI should be opened with the command start gui and may work independently o
 
 ### GUI Interface
 ![Alt Text](Imgs/gui_fig6.png)
+
+<table>
+  <tr>
+    <td>Opening screen of the gui.</td>
+     <td>The gui asks for a background image selection.</td>
+     <td>Replay of current frame 298 in the substitute mode.</td>
+  </tr>
+  <tr>
+    <td><img src="Imgs/gui_fig6.png" width=270 height=480></td>
+    <td><img src="Imgs/gui_fig7.png" width=270 height=480></td>
+    <td><img src="Imgs/gui_fig8.png" width=270 height=480></td>
+  </tr>
+ </table>
+ 
+ 
 Figure 6: Opening screen of the gui.
 
 Figure 7: The gui asks for a background image selection.
