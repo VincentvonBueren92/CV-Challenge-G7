@@ -126,7 +126,7 @@ The GUI should be opened with the command start gui and may work independently o
 - Y. Wong, S. Chen, S. Mau, C. Sanderson, B.C. Lovell
 Patch-based Probabilistic Image Quality Assessment for Face Selection and Improved Video-based Face Recognition
 IEEE Biometrics Workshop, Computer Vision and Pattern Recognition (CVPR) Workshops, pages 81-88. IEEE, June 2011.
-- Chokepoint Dataset __Link:__ http://arma.sourceforge.net/chokepoint/
+- Chokepoint Dataset Link: http://arma.sourceforge.net/chokepoint/
 
 
 
