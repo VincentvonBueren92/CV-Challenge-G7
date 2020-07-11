@@ -68,7 +68,7 @@ import ImageReader.*;
 % Initializes the save container for videos
 global saved_Video;
 
-% Initializes State Struct
+% Initializes State Struct which holds user video configurations
 global states;
 states = struct('gui_loop_set', 0, 'gui_start', 0,'be_src', 0, 'be_L',1,'be_R', 2, 'be_N', 2, 'EXIT', 0, 'selected_bg', 0, 'selected_mode', 'background', 'gui_save', 0, 'standby_mode', 0, 'max_num_frames', 100000);
 
@@ -98,9 +98,12 @@ function choose_mode_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns choose_mode contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from choose_mode
 global states;
+
+% Gets the selected mode 
 contents = cellstr(get(hObject,'String'));
 selected_mode = contents{get(hObject,'Value')};
 
+% Checks for wrong input possibilities
 var = '-----------';
 var1 = 'Choose a Mode';
 if strcmp(var,selected_mode)
@@ -141,6 +144,7 @@ function save_btn_Callback(hObject, eventdata, handles)
 global states;
 global saved_Video;
 
+% Checks for record and stop record condition
 if(strcmp(get(handles.save_btn,'String'),'RECORD'))
     
     % Sets the state variable for saving to 1 so that new frames can be
@@ -148,10 +152,13 @@ if(strcmp(get(handles.save_btn,'String'),'RECORD'))
     states.gui_save = 1;
     
     % Defines output name for later saving
-    dst = "output.avi";
+    dest = "output.avi";
     
     % Initializes Videowriter object
-    saved_Video = VideoWriter(dst,'Motion JPEG AVI');
+    saved_Video = VideoWriter(dest,'Motion JPEG AVI');
+    
+    % Changes video object to 30fps
+    saved_Video.FrameRate = 30; %set to 30 frames per second
     
     % Opens object for writing
     open(saved_Video);
@@ -170,14 +177,14 @@ else
 end
 
 
-
-% --- Executes on button press in save_btn.
+% ************************ Loop the Video**********************************
 function loop_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to save_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global states;
 
+% Sets and unsets the loop condition for the frame replay
 if(strcmp(get(handles.loop_btn,'String'),'LOOP'))
     disp("Compared works")
     set(handles.loop_btn,'String','NO LOOP');
@@ -276,7 +283,8 @@ while(1 && ~states.EXIT && ~states.standby_mode)
     % Renders the frame of the left camera given the mode and bg
     rendered_frame = render(frame_left, mask, bg, mode);
     
-    % Checks if the user want to save a file
+    % Checks if the user want to save a file and adds to new frames to
+    % video object
     if states.gui_save
         writeVideo(saved_Video,rendered_frame);
     end
@@ -307,7 +315,7 @@ while(1 && ~states.EXIT && ~states.standby_mode)
     
     % Checks for the flag (loop:= end of video)
     if loop == 1
-        % If GUI is manually set to LOOP, reset counter to selected start
+        % If GUI is manually set to loop, reset counter to selected start
         % value
         if states.gui_loop_set == 1
             counter = states.gui_start;
@@ -448,7 +456,7 @@ bg_image_path = fullfile(path_name, bg_name);
 states.selected_bg = bg_image_path;
 
 
-% ************************ Pause the Videor *******************************
+% ************************ Pause the Video ********************************
 function pause_btn_Callback(hObject, eventdata, handles)
 % hObject    handle to pause_btn (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
