@@ -58,10 +58,6 @@ The GUI should be opened with the command start gui and may work independently o
 - The user can record the streaming of the video with the **RECORD** button. He can finish the recording by pressing the button again. The result will be saved in an output file, named output.avi (30fps). 
 - Finally, the user can also exit the gui with the **EXIT** button. A message box will pop up for final confirmation. 
 
-## Packages included and Matlab version
-
-- Tested on Matlab 2020a
-- Image Processing Toolbox (Add-on on Matlab platform)
 
 ## Application examples
 ### Segmentation Output from the sequence xxx frame yyyy
@@ -122,6 +118,10 @@ The GUI should be opened with the command start gui and may work independently o
   </tr>
  </table> 
  
+## Packages included and Matlab version
+
+- Tested on Matlab 2020a
+- Image Processing Toolbox (Add-on on Matlab platform)
 
 ## References
 - Y. Wong, S. Chen, S. Mau, C. Sanderson, B.C. Lovell
