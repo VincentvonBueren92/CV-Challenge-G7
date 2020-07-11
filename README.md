@@ -64,9 +64,29 @@ The GUI should be opened with the command start gui and may work independently o
 - Image Processing Toolbox (Add-on on Matlab platform)
 
 ## Application examples
-### Segmentation of frames from the sequence xxx
+### Segmentation Output from the sequence xxx frame yyyy
+ 
+ <table>
+  <tr>
+    <td>Missing title (including mode + frame)</td>
+     <td>Missing title (including mode + frame)</td>
+  </tr>
+  <tr>
+    <td><img src="Imgs/rend_fig1.png"></td>
+    <td><img src="Imgs/rend_fig2.png"></td>
+  </tr>
+ </table>
 
-
+ <table>
+  <tr>
+    <td>Missing title (including mode + frame)</td>
+     <td>Missing title (including mode + frame)</td>
+  </tr>
+  <tr>
+    <td><img src="Imgs/rend_fig3.png"></td>
+    <td><img src="Imgs/rend_fig4.png"></td>
+  </tr>
+ </table>
 ### GUI Interface
 
 <table>
@@ -102,20 +122,6 @@ The GUI should be opened with the command start gui and may work independently o
   </tr>
  </table> 
  
-Figure 6: Opening screen of the gui.
-
-Figure 7: The gui asks for a background image selection.
-
-Figure 8: Replay of current frame 298 in the substitute mode.
-
-Figure 9: Replay of current frame 330 in the foreground mode.
-
-Figure 10: Replay of current frame 383 in the background mode.
-
-Figure 11: Replay of current frame 409 in the overlay mode.
-
-### Rendered video from sequence xxx
-
 
 ## References
 - Y. Wong, S. Chen, S. Mau, C. Sanderson, B.C. Lovell
