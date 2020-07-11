@@ -64,7 +64,7 @@ The GUI should be opened with the command start gui and may work independently o
  
  <table>
   <tr>
-    <td>Missing title (including mode + frame)</td>
+    <td>![#f03c15](Missing title (including mode + frame))</td>
      <td>Missing title (including mode + frame)</td>
   </tr>
   <tr>
