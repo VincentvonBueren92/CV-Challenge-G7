@@ -77,3 +77,31 @@ The recording or saving of frames is controlled by the Record button. This calls
 
 ### Play and Pause the video
 Another functionality that gui must include is the ability to pause and resume playback. Pausing the playback is realized with the Matlab function uiwait(). This stops the execution of the playback loop in the start function and does not interrupt it completely. To resume playback, use the Play button. By pressing it the counterpart function of the uiwait(), the uiresume() function is called. 
+
+### Exit the Gui
+
+Figure 5: Gui asks for final confirmation in order to exit the simulation. 
+
+To get a comprehensive user experience, the GUI can also be exited with an exit button. After pressing the buttons, the gui requires a final confirmation of the exit. This is to prevent the consequences of an incorrect pressing. If the user confirms the close, the GUI is closed and all objects are deleted. 
+
+Finally, snapshots from the interaction with the GUI are presented.
+
+
+Figure 6: Opening screen of the gui.
+
+Figure 7: The gui asks for a background image selection.
+
+Figure 8: Replay of current frame 298 in the substitute mode.
+
+Figure 9: Replay of current frame 330 in the foreground mode.
+
+Figure 10: Replay of current frame 383 in the background mode.
+
+Figure 11: Replay of current frame 409 in the overlay mode.
+
+
+## ImageReader class
+
+## Segmentation
+
+## Rendering
