@@ -39,9 +39,7 @@ The GUI should be opened with the command start gui and may work independently o
 ## Usage Instructions
 ### Standalone usage using challenge.m (suitable for command line run)
 - Run challenge.m provided in the source code, a video of the segmented video is then saved under/with the destination/name set in config.m.
-```matlab
-> challenge
-```
+
 ### GUI usage 
 #### How to interact with the GUI
 - In order to run the GUI, one can run the GUI.m file in matlab. There will be two windows present. An introduction window which explains the different buttons and their usability and the gui itself.
