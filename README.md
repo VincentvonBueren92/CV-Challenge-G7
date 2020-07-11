@@ -83,8 +83,7 @@ The GUI should be opened with the command start gui and may work independently o
     <td><img src="Imgs/rend_fig4.png"></td>
   </tr>
  </table>
-### GUI Interface
-
+### GUI Interface 
 <table>
   <tr>
     <td>Opening screen of the gui.</td>
