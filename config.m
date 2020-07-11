@@ -8,7 +8,7 @@ group_number = 7;
 members = {'Amna', 'Hannes', 'Johannes', 'Andreas', 'Vincent'};
 
 % Email-Address (from Moodle!):
-mail = {'', '', 'johannes.ernst@tum.de', 'ga94toq@tum.de', 'ga92cot@mytum.de'};
+mail = {'amna.najib@tum.de', '', 'johannes.ernst@tum.de', 'ga94toq@tum.de', 'ga92cot@mytum.de'};
 
 
 %% Setup Image Reader
