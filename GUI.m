@@ -201,9 +201,15 @@ function start_btn_Callback(hObject, eventdata, handles)
 global states
 global saved_Video
 
-% Set the counter to chosen gui_start value (default is zero)
-counter = states.gui_start;
-
+% If the user chooses a start_number which is bigger than the max number of
+% frames in scene, the counter will start at 0
+if states.gui_start > states.max_num_frames-3
+    counter = 0;
+else
+    % Set the counter to chosen gui_start value (default is zero)
+    counter = states.gui_start;
+end
+    
 % Resets the standbye mode to zero for replay of scenes
 states.standby_mode = 0;
 
@@ -295,6 +301,7 @@ while(1 && ~states.EXIT && ~states.standby_mode)
     set(handles.mode_presented, 'String', mode);
         
     drawnow;
+    
     % Increment the frame counter
     counter = counter + 1;
     
@@ -390,16 +397,8 @@ global states;
 
 % Represents the selected value for start
 chosen_num = str2num(get(hObject,'String'));
+states.gui_start = chosen_num;
 
-% Checks if the chosen number is in the bounds of max. possible frames in
-% scene
-if chosen_num >= states.max_num_frames-3
-    message = {'Oh no!!!', ' ', 'The frame you choose is to big, please choose another number' };
-    h=msgbox(message, 'Frame does not exist','warn');
-else
-    states.gui_start = chosen_num;
-end
-    
 % --- Executes during object creation, after setting all properties.
 function choose_start_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to choose_start (see GCBO)
