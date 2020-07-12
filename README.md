@@ -56,8 +56,8 @@ The GUI should be opened with the command start gui and may work independently o
 
 
 ## Application examples
-### Segmentation Output from the sequence xxx frame yyyy
- ~~Missing titles~~
+### Segmentation Output 
+
  <table>
   <tr>
     <td>Segmentation with mode "foreground" </td>
