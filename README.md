@@ -58,6 +58,7 @@ The GUI should be opened with the command start gui and may work independently o
 ## Application examples
 ### Segmentation Output 
 
+The shown results are from the sequence is P1E_S1_C1, frame 00001159.
  <table>
   <tr>
     <td>Segmentation with mode "foreground" </td>
