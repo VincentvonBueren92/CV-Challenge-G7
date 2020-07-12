@@ -71,8 +71,8 @@ The GUI should be opened with the command start gui and may work independently o
 
  <table>
   <tr>
-    <td>Missing title (including mode + frame)</td>
-     <td>Missing title (including mode + frame)</td>
+    <td>Segmentation with mode "overlay" (including mode + frame)</td>
+     <td>Segmentation with mode "substitute (including mode + frame)</td>
   </tr>
   <tr>
     <td><img src="Imgs/rend_fig3.png"></td>
