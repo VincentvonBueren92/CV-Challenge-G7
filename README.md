@@ -60,8 +60,8 @@ The GUI should be opened with the command start gui and may work independently o
  ~~Missing titles~~
  <table>
   <tr>
-    <td>Missing title (including mode + frame)</td>
-     <td> Missing title (including mode + frame) </td>
+    <td>Segmentation with mode "foreground" (including mode + frame)</td>
+     <td> Segmentation with mode "background" (including mode + frame) </td>
   </tr>
   <tr>
     <td><img src="Imgs/rend_fig1.png"></td>
