@@ -6,8 +6,6 @@ This project is the result of a challenge from the Computer Vision Department of
 
 The data for this challenge is the ChokePoint dataset, which consists of recordings from surveillance cameras at various portals (P1, P2). There are three cameras each (C1, C2, C3), which film the same scenes (S1 - S5) simultaneously. Each portal was also recorded once from the inside (E enter) and once from the outside (L leave). The resulting images have a size of 800×600 pixels and were taken at 30fps.
 
-__Link:__ http://arma.sourceforge.net/chokepoint/
-
 
 ## Challenge Requirements
 
@@ -40,10 +38,8 @@ The GUI should be opened with the command start gui and may work independently o
 
 ## Usage Instructions
 ### Standalone usage using challenge.m (suitable for command line run)
-- Run challenge.m provided in the source code, a video of thesegmented video is then saved under the destination/name set in config.m.
-```matlab
-> challenge
-```
+- Run challenge.m provided in the source code, a video of the segmented video is then saved under/with the destination/name set in config.m.
+
 ### GUI usage 
 #### How to interact with the GUI
 - In order to run the GUI, one can run the GUI.m file in matlab. There will be two windows present. An introduction window which explains the different buttons and their usability and the gui itself.
@@ -58,18 +54,15 @@ The GUI should be opened with the command start gui and may work independently o
 - The user can record the streaming of the video with the **RECORD** button. He can finish the recording by pressing the button again. The result will be saved in an output file, named output.avi (30fps). 
 - Finally, the user can also exit the gui with the **EXIT** button. A message box will pop up for final confirmation. 
 
-## Packages included and Matlab version
-
-- Tested on Matlab 2020a
-- Image Processing Toolbox (Add-on on Matlab platform)
 
 ## Application examples
-### Segmentation Output from the sequence xxx frame yyyy
- 
+### Segmentation Output 
+
+The shown results are from the sequence P1E_S1_C1, frame 00001159.
  <table>
   <tr>
-    <td>Missing title (including mode + frame)</td>
-     <td>Missing title (including mode + frame)</td>
+    <td>Segmentation with mode "foreground" </td>
+     <td> Segmentation with mode "background"  </td>
   </tr>
   <tr>
     <td><img src="Imgs/rend_fig1.png"></td>
@@ -79,15 +72,16 @@ The GUI should be opened with the command start gui and may work independently o
 
  <table>
   <tr>
-    <td>Missing title (including mode + frame)</td>
-     <td>Missing title (including mode + frame)</td>
+    <td>Segmentation with mode "overlay" </td>
+     <td>Segmentation with mode "substitute </td>
   </tr>
   <tr>
     <td><img src="Imgs/rend_fig3.png"></td>
     <td><img src="Imgs/rend_fig4.png"></td>
   </tr>
  </table>
-### GUI Interface
+ 
+### GUI Interface 
 
 <table>
   <tr>
@@ -122,11 +116,16 @@ The GUI should be opened with the command start gui and may work independently o
   </tr>
  </table> 
  
+## Packages included and Matlab version
+
+- Tested on Matlab 2020a
+- Image Processing Toolbox (https://de.mathworks.com/products/image.html)
 
 ## References
 - Y. Wong, S. Chen, S. Mau, C. Sanderson, B.C. Lovell
 Patch-based Probabilistic Image Quality Assessment for Face Selection and Improved Video-based Face Recognition
 IEEE Biometrics Workshop, Computer Vision and Pattern Recognition (CVPR) Workshops, pages 81-88. IEEE, June 2011.
-- Chokepoint Dataset (http://arma.sourceforge.net/chokepoint)
+- Chokepoint Dataset Link: http://arma.sourceforge.net/chokepoint/
+
 
 
