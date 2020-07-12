@@ -29,7 +29,6 @@ while loop ~= 1
 
     % Render new frame
     movie = cat(4, movie,render(left_frame, mask, bg, mode)) ;
-      
 end
 
 %% Stop timer here
@@ -44,7 +43,7 @@ tStart =  tic;
 if store
     [~, ~, ~, N] = size(movie)
     % Create a video Instance
-    v = VideoWriter(dst,'Motion JPEG AVI');
+    v = VideoWriter(dest,'Motion JPEG AVI');
     % Set the fps to 30
     v.FrameRate = 30;
     % Open the video
@@ -57,6 +56,7 @@ if store
     end
     % Close the video after saving
     close(v);
+
 end
 
 %% Stop time (for saving the video)

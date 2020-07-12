@@ -20,28 +20,24 @@ L = 1;
 R = 2;
 
 % Choose a start point
-start = 200;
+start = 2200;
 
 % Choose the number of succseeding frames
 N = 2;
-
-% ir = ImageReader(src, L, R, start, N);
-
 
 %% Output Settings
 % Output Path
 dest = "output.avi";
 
 % Load Virual Background
-bg = "/Users/amna.najib/Documents/amna/CV/data/background.jpeg"
+bg = "/Users/amna.najib/Documents/amna/CV/data/background.jpeg";
 
 % Select rendering mode
 mode = "substitute";
 
 % Create a movie array
-movie = []
+movie = [];
 
 % Store Output?
 store = true;
 
-save('instance.mat', 'N', 'start', 'L', 'R', 'src', 'mode', 'store', 'bg', 'dest');
